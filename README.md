@@ -1,2 +1,2 @@
 # java-works
-Sample java sources
+Sample Java Sources
