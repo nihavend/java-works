@@ -1,4 +1,4 @@
-package com.likya.preview;
+package com.likya.java14;
 
 public class FeaturesJEP305 {
 
