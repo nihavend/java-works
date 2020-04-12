@@ -13,7 +13,7 @@
 
     <target name="compile">
         <mkdir dir="build/classes"/>
-        <javac srcdir="src" executable="${java14.path}" destdir="build/classes" fork="true">
+        <javac debug="true" srcdir="src" executable="${java14.path}" destdir="build/classes" fork="true">
         	<compilerarg line="--release 14"/>
         	<compilerarg line="--enable-preview"/>
         </javac>
@@ -21,7 +21,7 @@
 
     <target name="jar">
         <mkdir dir="build/jar"/>
-        <jar destfile="build/jar/FeaturesJEP305.jar" basedir="build/classes">
+        <jar destfile="build/jar/Java14Features.jar" basedir="build/classes">
             <manifest>
                 <attribute name="Main-Class" value="com.likya.preview.FeaturesJEP305"/>
             </manifest>
@@ -29,7 +29,7 @@
     </target>
 
     <target name="runjar">
-        <java jvm="${java}" jar="build/jar/FeaturesJEP305.jar" fork="true">
+        <java jvm="${java}" jar="build/jar/Java14Features.jar" fork="true">
         	 <jvmarg value="--enable-preview"/>
     	</java>
     </target>
@@ -39,5 +39,18 @@
         	 <jvmarg value="--enable-preview"/>
     	</java>
     </target>
-	
+
+    <target name="runjpe305" depends="clean,compile">
+        <java classname="com.likya.java14.FeaturesJEP305" classpath="build/classes/." jvm="${java}" fork="true">
+        	 <jvmarg value="--enable-preview"/>
+    	</java>
+    </target>
+
+    <target name="runjpe358" depends="clean,compile">
+        <java classname="com.likya.java14.FeaturesJEP358" classpath="build/classes/." jvm="${java}" fork="true">
+        	<jvmarg value="--enable-preview"/>
+        	<jvmarg value="-XX:+ShowCodeDetailsInExceptionMessages"/>
+    	</java>
+    </target>
+
 </project>
