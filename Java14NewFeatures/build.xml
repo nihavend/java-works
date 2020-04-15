@@ -40,16 +40,28 @@
     	</java>
     </target>
 
-    <target name="runjpe305" depends="clean,compile">
+    <target name="runjep305" depends="clean,compile">
         <java classname="com.likya.java14.FeaturesJEP305" classpath="build/classes/." jvm="${java}" fork="true">
         	 <jvmarg value="--enable-preview"/>
     	</java>
     </target>
 
-    <target name="runjpe358" depends="clean,compile">
+    <target name="runjep358" depends="clean,compile">
         <java classname="com.likya.java14.FeaturesJEP358" classpath="build/classes/." jvm="${java}" fork="true">
         	<jvmarg value="--enable-preview"/>
         	<jvmarg value="-XX:+ShowCodeDetailsInExceptionMessages"/>
+    	</java>
+    </target>
+
+    <target name="runjep359" depends="clean,compile">
+        <java classname="com.likya.java14.FeaturesJEP359" classpath="build/classes/." jvm="${java}" fork="true">
+        	<jvmarg value="--enable-preview"/>
+    	</java>
+    </target>
+
+    <target name="runjep361" depends="clean,compile">
+        <java classname="com.likya.java14.FeaturesJEP361" classpath="build/classes/." jvm="${java}" fork="true">
+        	<jvmarg value="--enable-preview"/>
     	</java>
     </target>
 
