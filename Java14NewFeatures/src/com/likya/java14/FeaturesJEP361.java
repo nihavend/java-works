@@ -7,25 +7,28 @@ public class FeaturesJEP361 {
 	};
 
 	public static void main(String[] args) {
-		/*
-		brandNewSwitchStatement();
 		
-		traditionalSwitchStatement();
 		
-		howMany(1);
+		
+		// brandNewSwitchStatement();
+				
+		scopedSwitchStatement();
+		
+		// traditionalSwitchStatement();
+		
+		// howMany(1);
 
-		brandNewSwitchStatement();
+		// brandNewSwitchStatement();
 
-		switchAsExpression();
+		// switchAsExpression();
 
-		switchAsExpressionWithYield();
+		// switchAsExpressionWithYield();
 
-		yieldWithTraditionalSwitch();
-		*/
+		// yieldWithTraditionalSwitch();
 		
 		// exhaustiveness1();
 		
-		exhaustiveness2();
+		// exhaustiveness2();
 		
 	}
 
@@ -107,6 +110,26 @@ public class FeaturesJEP361 {
 		}
 		
 	}
+	
+	public static void scopedSwitchStatement() {
+		
+		System.out.println("Running sample : traditionalSwitchStatement ");
+		var day = days.WEDNESDAY;
+		
+		switch (day) {
+			case MONDAY:
+			case TUESDAY:
+				int temp = 1;     // The scope of 'temp' continues to the }
+				break;
+			case WEDNESDAY:
+			case THURSDAY:
+				int temp2 = 1;    // Can't call this variable 'temp', used temp2
+				break;
+			default:
+				int temp3 = 1;    // Can't call this variable 'temp' or 'temp2', used temp3
+		}
+		
+	}
 
 	public static void traditionalSwitchStatement() {
 
@@ -132,7 +155,7 @@ public class FeaturesJEP361 {
 		}
 
 	}
-	
+	/*
 	public static void exhaustiveness1() {
 
 		System.out.println("Running sample : exhaustiveness1 ");
@@ -172,5 +195,5 @@ public class FeaturesJEP361 {
 	    	}
 		};
 	}
-
+*/
 }

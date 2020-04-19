@@ -65,4 +65,10 @@
     	</java>
     </target>
 
+    <target name="runjep368" depends="clean,compile">
+        <java classname="com.likya.java14.FeaturesJEP368" classpath="build/classes/." jvm="${java}" fork="true">
+        	<jvmarg value="--enable-preview"/>
+    	</java>
+    </target>
+
 </project>
