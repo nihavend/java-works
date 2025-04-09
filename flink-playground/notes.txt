@@ -1,4 +1,7 @@
+****************************
+en son aldığım örnek 
 
+created from : https://medium.com/@vndhya/apache-flink-streaming-kafka-events-in-json-format-complete-sample-code-in-java-70372d62f61
 
 
 docker run -p 9092:9092 apache/kafka:3.7.0
@@ -17,7 +20,7 @@ docker exec -it 1ad8969281e9 bash
 /opt/kafka/bin/kafka-console-consumer.sh --topic flinktopic --bootstrap-server localhost:9092
 
 
-created from : https://medium.com/@vndhya/apache-flink-streaming-kafka-events-in-json-format-complete-sample-code-in-java-70372d62f61
+
 
 sample message : 
 {"orderId":"1","userId":"2","priceAmount":100.0,"eventTime":"2023-07-16T04:31:09Z","userName":"vg"}
@@ -26,3 +29,6 @@ sample message :
 {"orderId":"1","userId":"2","priceAmount":50.0,"eventTime":"2023-07-16T04:31:09Z","userName":"vg"}
 {"orderId":"1","userId":"2","priceAmount":0.0,"eventTime":"2023-07-16T04:31:09Z","userName":"vg"}
 {"orderId":"1","userId":"2","priceAmount":20.0,"eventTime":"2023-07-16T04:31:09Z","userName":"vg"}
+
+
+
