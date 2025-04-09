@@ -32,3 +32,23 @@ sample message :
 
 
 
+maven things :
+
+mvn clean
+
+mvn generate-sources
+
+
+mvn compile exec:java -Dexec.mainClass=org.sample.flink.tabii.publisher.KafkaJsonProducer
+
+
+
+jenv enable-plugin maven
+
+check 
+java -version 
+mvn -version
+
+uymalı !!!
+
+mvn compile exec:java -Dexec.mainClass=org.sample.flink.tabii.StreamingTabiiLogsToS3Parquet

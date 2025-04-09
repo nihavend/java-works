@@ -26,7 +26,7 @@ public class KafkaJsonProducer {
 		KafkaProducer<String, String> producer = new KafkaProducer<String, String>(props);
 		try {
 			// Generate and send 10 random messages
-			for (int i = 0; i < 20; i++) {
+			for (int i = 0; i < 5; i++) {
 				ResourceLogsWrapper message = generateRandomMessage();
 				String json = objectMapper.writeValueAsString(message);
 				ProducerRecord<String, String> record = new ProducerRecord<String, String>("flinktopic", null, json);
