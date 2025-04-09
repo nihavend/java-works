@@ -1,0 +1,440 @@
+{
+	"resourceLogs": [
+		{
+			"resource": {
+				"attributes": [
+					{
+						"key": "commit",
+						"value": {
+							"stringValue": ""
+						}
+					},
+					{
+						"key": "deployment.environment",
+						"value": {
+							"stringValue": "release"
+						}
+					},
+					{
+						"key": "host.name",
+						"value": {
+							"stringValue": "mehmetcanercakici.local"
+						}
+					},
+					{
+						"key": "process.command_args",
+						"value": {
+							"arrayValue": {
+								"values": [
+									{
+										"stringValue": "/Users/mehmetcaner.cakici/Library/Caches/go-build/f1/f15202ea099a10e2d48c09f90f2802c03f749e19a68a009e9c622507676beced-d/main"
+									}
+								]
+							}
+						}
+					},
+					{
+						"key": "process.executable.name",
+						"value": {
+							"stringValue": "main"
+						}
+					},
+					{
+						"key": "process.executable.path",
+						"value": {
+							"stringValue": "/Users/mehmetcaner.cakici/Library/Caches/go-build/f1/f15202ea099a10e2d48c09f90f2802c03f749e19a68a009e9c622507676beced-d/main"
+						}
+					},
+					{
+						"key": "process.owner",
+						"value": {
+							"stringValue": "mehmetcaner.cakici"
+						}
+					},
+					{
+						"key": "process.pid",
+						"value": {
+							"intValue": "14025"
+						}
+					},
+					{
+						"key": "process.runtime.description",
+						"value": {
+							"stringValue": "go version go1.24.0 darwin/arm64"
+						}
+					},
+					{
+						"key": "process.runtime.name",
+						"value": {
+							"stringValue": "go"
+						}
+					},
+					{
+						"key": "process.runtime.version",
+						"value": {
+							"stringValue": "go1.24.0"
+						}
+					},
+					{
+						"key": "service.instance.id",
+						"value": {
+							"stringValue": "mehmetcanercakici.local"
+						}
+					},
+					{
+						"key": "service.name",
+						"value": {
+							"stringValue": "int.otel_ref_impl"
+						}
+					},
+					{
+						"key": "service.version",
+						"value": {
+							"stringValue": ""
+						}
+					},
+					{
+						"key": "telemetry.sdk.language",
+						"value": {
+							"stringValue": "go"
+						}
+					},
+					{
+						"key": "telemetry.sdk.name",
+						"value": {
+							"stringValue": "opentelemetry"
+						}
+					},
+					{
+						"key": "telemetry.sdk.version",
+						"value": {
+							"stringValue": "1.35.0"
+						}
+					},
+					{
+						"key": "k8s.pod.ip",
+						"value": {
+							"stringValue": "192.168.65.3"
+						}
+					}
+				]
+			},
+			"scopeLogs": [
+				{
+					"scope": {
+						"name": "int.otel_ref_impl"
+					},
+					"logRecords": [
+						{
+							"timeUnixNano": "1744026361474838000",
+							"observedTimeUnixNano": "1744026361475022000",
+							"severityNumber": 9,
+							"severityText": "info",
+							"body": {
+								"stringValue": "Checking session list"
+							},
+							"attributes": [
+								{
+									"key": "serviceName",
+									"value": {
+										"stringValue": "int.otel_ref_impl"
+									}
+								},
+								{
+									"key": "hostname",
+									"value": {
+										"stringValue": "mehmetcanercakici.local"
+									}
+								},
+								{
+									"key": "code.filepath",
+									"value": {
+										"stringValue": "/Users/mehmetcaner.cakici/workspace/int.otel_ref_impl/services/session.go"
+									}
+								},
+								{
+									"key": "code.lineno",
+									"value": {
+										"intValue": "47"
+									}
+								},
+								{
+									"key": "code.function",
+									"value": {
+										"stringValue": "github.com/trtworld/int.otel_ref_impl/services.(*SessionService).CheckList"
+									}
+								},
+								{
+									"key": "language",
+									"value": {
+										"stringValue": "en"
+									}
+								},
+								{
+									"key": "correlationId",
+									"value": {
+										"stringValue": "71f1f0b1-96a4-42f4-ac28-93606822c77d"
+									}
+								},
+								{
+									"key": "method",
+									"value": {
+										"stringValue": "POST"
+									}
+								},
+								{
+									"key": "path",
+									"value": {
+										"stringValue": "/api/v1/session/check"
+									}
+								},
+								{
+									"key": "query",
+									"value": {
+										"stringValue": ""
+									}
+								},
+								{
+									"key": "user-agent",
+									"value": {
+										"stringValue": "PostmanRuntime/7.43.2"
+									}
+								},
+								{
+									"key": "request",
+									"value": {
+										"stringValue": "POST /api/v1/session/check HTTP/1.1\r\nHost: localhost:50062\r\nAccept: */*\r\nAccept-Encoding: gzip, deflate, br\r\nAccept-Language: en\r\nConnection: keep-alive\r\nContent-Length: 85\r\nContent-Type: application/json\r\nCookie: csrftoken=xp6ZPNXbC2bj86yCmOQG1XEWKEfwx7kK\r\nUser-Agent: PostmanRuntime/7.43.2\r\nX-Amz-Cf-Id: 71f1f0b1-96a4-42f4-ac28-93606822c77d\r\n\r\n"
+									}
+								},
+								{
+									"key": "idList",
+									"value": {
+										"arrayValue": {
+											"values": [
+												{
+													"stringValue": "do dolor mollit3332"
+												},
+												{
+													"stringValue": "consequat in eu amet"
+												}
+											]
+										}
+									}
+								},
+								{
+									"key": "time",
+									"value": {
+										"stringValue": "2025-04-07T11:46:01Z"
+									}
+								}
+							],
+							"traceId": "",
+							"spanId": ""
+						},
+						{
+							"timeUnixNano": "1744026361488899000",
+							"observedTimeUnixNano": "1744026361488917000",
+							"severityNumber": 9,
+							"severityText": "info",
+							"body": {
+								"stringValue": "Session check completed successfully"
+							},
+							"attributes": [
+								{
+									"key": "serviceName",
+									"value": {
+										"stringValue": "int.otel_ref_impl"
+									}
+								},
+								{
+									"key": "hostname",
+									"value": {
+										"stringValue": "mehmetcanercakici.local"
+									}
+								},
+								{
+									"key": "code.filepath",
+									"value": {
+										"stringValue": "/Users/mehmetcaner.cakici/workspace/int.otel_ref_impl/services/session.go"
+									}
+								},
+								{
+									"key": "code.lineno",
+									"value": {
+										"intValue": "56"
+									}
+								},
+								{
+									"key": "code.function",
+									"value": {
+										"stringValue": "github.com/trtworld/int.otel_ref_impl/services.(*SessionService).CheckList"
+									}
+								},
+								{
+									"key": "language",
+									"value": {
+										"stringValue": "en"
+									}
+								},
+								{
+									"key": "correlationId",
+									"value": {
+										"stringValue": "71f1f0b1-96a4-42f4-ac28-93606822c77d"
+									}
+								},
+								{
+									"key": "method",
+									"value": {
+										"stringValue": "POST"
+									}
+								},
+								{
+									"key": "path",
+									"value": {
+										"stringValue": "/api/v1/session/check"
+									}
+								},
+								{
+									"key": "query",
+									"value": {
+										"stringValue": ""
+									}
+								},
+								{
+									"key": "user-agent",
+									"value": {
+										"stringValue": "PostmanRuntime/7.43.2"
+									}
+								},
+								{
+									"key": "request",
+									"value": {
+										"stringValue": "POST /api/v1/session/check HTTP/1.1\r\nHost: localhost:50062\r\nAccept: */*\r\nAccept-Encoding: gzip, deflate, br\r\nAccept-Language: en\r\nConnection: keep-alive\r\nContent-Length: 85\r\nContent-Type: application/json\r\nCookie: csrftoken=xp6ZPNXbC2bj86yCmOQG1XEWKEfwx7kK\r\nUser-Agent: PostmanRuntime/7.43.2\r\nX-Amz-Cf-Id: 71f1f0b1-96a4-42f4-ac28-93606822c77d\r\n\r\n"
+									}
+								},
+								{
+									"key": "request.count",
+									"value": {
+										"intValue": "2"
+									}
+								},
+								{
+									"key": "time",
+									"value": {
+										"stringValue": "2025-04-07T11:46:01Z"
+									}
+								}
+							],
+							"traceId": "",
+							"spanId": ""
+						},
+						{
+							"timeUnixNano": "1744026361489814000",
+							"observedTimeUnixNano": "1744026361490122000",
+							"severityNumber": 9,
+							"severityText": "info",
+							"body": {
+								"stringValue": ""
+							},
+							"attributes": [
+								{
+									"key": "serviceName",
+									"value": {
+										"stringValue": "int.otel_ref_impl"
+									}
+								},
+								{
+									"key": "hostname",
+									"value": {
+										"stringValue": "mehmetcanercakici.local"
+									}
+								},
+								{
+									"key": "code.filepath",
+									"value": {
+										"stringValue": "/Users/mehmetcaner.cakici/workspace/pkg/mod/github.com/gin-gonic/gin@v1.10.0/context.go"
+									}
+								},
+								{
+									"key": "code.lineno",
+									"value": {
+										"intValue": "185"
+									}
+								},
+								{
+									"key": "code.function",
+									"value": {
+										"stringValue": "github.com/gin-gonic/gin.(*Context).Next"
+									}
+								},
+								{
+									"key": "status",
+									"value": {
+										"intValue": "200"
+									}
+								},
+								{
+									"key": "method",
+									"value": {
+										"stringValue": "POST"
+									}
+								},
+								{
+									"key": "path",
+									"value": {
+										"stringValue": "/api/v1/session/check"
+									}
+								},
+								{
+									"key": "query",
+									"value": {
+										"stringValue": ""
+									}
+								},
+								{
+									"key": "ip",
+									"value": {
+										"stringValue": "::1"
+									}
+								},
+								{
+									"key": "user-agent",
+									"value": {
+										"stringValue": "PostmanRuntime/7.43.2"
+									}
+								},
+								{
+									"key": "latency",
+									"value": {
+										"intValue": "15196584"
+									}
+								},
+								{
+									"key": "time",
+									"value": {
+										"stringValue": "2025-04-07T14:46:01+03:00"
+									}
+								},
+								{
+									"key": "language",
+									"value": {
+										"stringValue": "en"
+									}
+								},
+								{
+									"key": "correlationId",
+									"value": {
+										"stringValue": "71f1f0b1-96a4-42f4-ac28-93606822c77d"
+									}
+								}
+							],
+							"traceId": "",
+							"spanId": ""
+						}
+					]
+				}
+			],
+			"schemaUrl": "https://opentelemetry.io/schemas/1.26.0"
+		}
+	]
+}
