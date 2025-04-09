@@ -1,0 +1,45 @@
+
+
+mvn exec:java -Dexec.mainClass="com.tabii.flink.KafkaToS3"
+
+
+https://gautambangalore.medium.com/streaming-real-time-data-from-kafka-3-7-0-to-flink-1-18-1-for-processing-9db7a590af6e
+
+
+docker run -p 9092:9092 apache/kafka:3.7.0
+
+
+ /opt/kafka/bin/kafka-topics.sh --create --topic test-flink-stream --bootstrap-server localhost:9092
+ 
+ 
+ /opt/kafka/bin/kafka-topics.sh --list --bootstrap-server localhost:9092
+ 
+ 
+ /opt/kafka/bin/kafka-console-producer.sh --topic test-flink-stream --bootstrap-server localhost:9092
+ 
+ 
+ 
+ 
+ aws s3 ls s3://int-avatar-test/logs/
+ 
+ 
+ https://nightlies.apache.org/flink/flink-docs-release-1.18/docs/deployment/filesystems/s3/
+ 
+ 
+ Çalışan örneği buradan aldım...
+ https://github.com/aws-samples/amazon-managed-service-for-apache-flink-examples/blob/main/java/S3Sink/src/main/java/com/amazonaws/services/msf/StockPriceGeneratorFunction.java#L9
+ 
+ 
+ Locale:
+ https://stackoverflow.com/questions/64038/setting-java-locale-settings
+ 
+ 
+ 
+{"symbol":"TBV", "count":2} 
+
+{"symbol":"MSFT"} 
+ 
+{"symbol":MSFT,"price":85.92103591154482,"volume":5,"timestamp"::1715863231917}
+ 
+ 
+ show content : aws s3 cp s3://path/to/my/object - | head

@@ -4,3 +4,4 @@ flink-playground/.settings/
 flink-playground/src/.DS_Store
 flink-playground/target/
 flink-playground/.vscode/settings.json
+.DS_Store

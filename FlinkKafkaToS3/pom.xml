@@ -1,0 +1,190 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>FlinkKafkaToS3</groupId>
+	<artifactId>FlinkKafkaToS3</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<build>
+		<sourceDirectory>src</sourceDirectory>
+		<plugins>
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.8.1</version>
+				<configuration>
+					<release>21</release>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+
+	<properties>
+		<flink.version>1.18.1</flink.version> <!-- Match your runtime -->
+		<avro.version>1.10.2</avro.version>
+	</properties>
+
+
+	<dependencies>
+
+		<dependency>
+			<groupId>org.apache.parquet</groupId>
+			<artifactId>parquet-column</artifactId>
+			<version>1.12.3</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.parquet</groupId>
+			<artifactId>parquet-hadoop</artifactId>
+			<version>1.11.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.flink</groupId>
+			<artifactId>flink-avro</artifactId>
+			<version>${flink.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.avro</groupId>
+			<artifactId>avro</artifactId>
+			<version>${avro.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.flink</groupId>
+			<artifactId>flink-java</artifactId>
+			<version>${flink.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.flink</groupId>
+			<artifactId>flink-parquet</artifactId>
+			<version>${flink.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.parquet</groupId>
+			<artifactId>parquet-avro</artifactId>
+			<version>1.12.3</version>
+		</dependency>
+
+		<!--		<dependency>-->
+		<!--			<groupId>org.apache.flink</groupId>-->
+		<!--			<artifactId>flink-core</artifactId>-->
+		<!--			<version>1.18.1</version>-->
+		<!--		</dependency>-->
+		<!-- https://mvnrepository.com/artifact/org.apache.flink/flink-core -->
+		<dependency>
+			<groupId>org.apache.flink</groupId>
+			<artifactId>flink-core</artifactId>
+			<version>${flink.version}</version>
+		</dependency>
+
+
+		<dependency>
+			<groupId>org.apache.flink</groupId>
+			<artifactId>flink-streaming-java</artifactId>
+			<version>${flink.version}</version>
+		</dependency>
+
+
+		<dependency>
+			<groupId>org.apache.flink</groupId>
+			<artifactId>flink-cep</artifactId>
+			<version>${flink.version}</version>
+		</dependency>
+
+
+		<!--
+		https://mvnrepository.com/artifact/org.apache.flink/flink-connector-kafka -->
+		<!--
+		https://mvnrepository.com/artifact/org.apache.flink/flink-connector-kafka -->
+		<dependency>
+			<groupId>org.apache.flink</groupId>
+			<artifactId>flink-connector-kafka</artifactId>
+			<version>1.17.2</version>
+		</dependency>
+
+		<!--
+		https://mvnrepository.com/artifact/org.apache.flink/flink-shaded-guava -->
+		<!--		<dependency>-->
+		<!--			<groupId>org.apache.flink</groupId>-->
+		<!--			<artifactId>flink-shaded-guava</artifactId>-->
+		<!--			<version>30.1.1-jre-16.0</version>-->
+		<!--		</dependency>-->
+
+		<!--
+		https://mvnrepository.com/artifact/org.apache.flink/flink-shaded-force-shading -->
+		<!--		<dependency>-->
+		<!--			<groupId>org.apache.flink</groupId>-->
+		<!--			<artifactId>flink-shaded-force-shading</artifactId>-->
+		<!--			<version>14.0</version>-->
+		<!--		</dependency>-->
+
+
+		<!--
+		https://mvnrepository.com/artifact/org.apache.flink/flink-shaded-guava -->
+		<dependency>
+			<groupId>org.apache.flink</groupId>
+			<artifactId>flink-shaded-guava</artifactId>
+			<version>32.1.3-jre-18.0</version>
+		</dependency>
+		<!--
+		https://mvnrepository.com/artifact/org.apache.flink/flink-shaded-guava -->
+		<dependency>
+			<groupId>org.apache.flink</groupId>
+			<artifactId>flink-shaded-guava</artifactId>
+			<version>31.1-jre-17.0</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.apache.flink/flink-clients -->
+		<dependency>
+			<groupId>org.apache.flink</groupId>
+			<artifactId>flink-clients</artifactId>
+			<version>${flink.version}</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/org.apache.flink/flink-runtime -->
+		<dependency>
+			<groupId>org.apache.flink</groupId>
+			<artifactId>flink-runtime</artifactId>
+			<version>${flink.version}</version>
+		</dependency>
+
+
+		<!-- SLF4J API -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>2.0.9</version> <!-- Latest version compatible with Flink -->
+		</dependency>
+		<!-- SLF4J Logging Implementation -->
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-classic</artifactId>
+			<version>1.4.11</version> <!-- Latest stable version as of now -->
+		</dependency>
+
+		<!-- S3 dependencies-->
+		<!-- File Sink Connector (for S3) -->
+		<dependency>
+			<groupId>org.apache.flink</groupId>
+			<artifactId>flink-connector-files</artifactId>
+			<version>${flink.version}</version>
+		</dependency>
+		<!-- Hadoop S3 FileSystem (for S3 access) -->
+		<dependency>
+			<groupId>org.apache.flink</groupId>
+			<artifactId>flink-s3-fs-hadoop</artifactId>
+			<version>${flink.version}</version>
+		</dependency>
+
+
+		<!--
+		https://mvnrepository.com/artifact/org.apache.flink/flink-runtime-web -->
+		<dependency>
+			<groupId>org.apache.flink</groupId>
+			<artifactId>flink-runtime-web</artifactId>
+			<version>${flink.version}</version>
+		</dependency>
+	</dependencies>
+</project>
