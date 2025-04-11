@@ -1,0 +1,54 @@
+****************************
+en son aldığım örnek 
+
+created from : https://medium.com/@vndhya/apache-flink-streaming-kafka-events-in-json-format-complete-sample-code-in-java-70372d62f61
+
+
+docker run -p 9092:9092 apache/kafka:3.7.0
+
+docker exec -it 1ad8969281e9 bash
+
+
+/opt/kafka/bin/kafka-topics.sh --create --topic test-flink-stream --bootstrap-server localhost:9092
+
+
+/opt/kafka/bin/kafka-topics.sh --list --bootstrap-server localhost:9092
+
+
+/opt/kafka/bin/kafka-console-producer.sh --topic flinktopic --bootstrap-server localhost:9092
+
+/opt/kafka/bin/kafka-console-consumer.sh --topic flinktopic --bootstrap-server localhost:9092
+
+
+
+
+sample message : 
+{"orderId":"1","userId":"2","priceAmount":100.0,"eventTime":"2023-07-16T04:31:09Z","userName":"vg"}
+
+
+{"orderId":"1","userId":"2","priceAmount":50.0,"eventTime":"2023-07-16T04:31:09Z","userName":"vg"}
+{"orderId":"1","userId":"2","priceAmount":0.0,"eventTime":"2023-07-16T04:31:09Z","userName":"vg"}
+{"orderId":"1","userId":"2","priceAmount":20.0,"eventTime":"2023-07-16T04:31:09Z","userName":"vg"}
+
+
+
+maven things :
+
+mvn clean
+
+mvn generate-sources
+
+
+mvn compile exec:java -Dexec.mainClass=com.tabii.ref_impl.flink.publisher.KafkaJsonProducer
+
+
+
+jenv enable-plugin maven
+
+check 
+java -version 
+mvn -version
+
+uymalı !!!
+
+mvn compile exec:java -Dexec.mainClass=com.tabii.ref_impl.flink.StreamingTabiiLogsToS3Parquet

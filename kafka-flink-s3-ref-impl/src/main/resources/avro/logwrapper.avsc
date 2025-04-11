@@ -1,0 +1,156 @@
+{
+  "namespace": "com.tabii.ref_impl.flink.model.avro",
+  "type": "record",
+  "name": "LogWrapperAvro",
+  "fields": [
+    {
+      "name": "resourceLogs",
+      "type": {
+        "type": "array",
+        "items": {
+          "type": "record",
+          "name": "ResourceLogAvro",
+          "fields": [
+            {
+              "name": "resource",
+              "type": [
+                "null",
+                {
+                  "type": "record",
+                  "name": "ResourceAvro",
+                  "fields": [
+                    {
+                      "name": "attributes",
+                      "type": {
+                        "type": "array",
+                        "items": {
+                          "type": "record",
+                          "name": "AttributeAvro",
+                          "fields": [
+                            {"name": "key", "type": ["null", "string"], "default": null},
+                            {
+                              "name": "value",
+                              "type": [
+                                "null",
+                                {
+                                  "type": "record",
+                                  "name": "ValueAvro",
+                                  "fields": [
+                                    {"name": "stringValue", "type": ["null", "string"], "default": null},
+                                    {"name": "intValue", "type": ["null", "string"], "default": null},
+                                    {
+                                      "name": "arrayValue",
+                                      "type": [
+                                        "null",
+                                        {
+                                          "type": "record",
+                                          "name": "ArrayValueAvro",
+                                          "fields": [
+                                            {
+                                              "name": "values",
+                                              "type": {
+                                                "type": "array",
+                                                "items": {
+                                                  "type": "record",
+                                                  "name": "SimpleValueAvro",
+                                                  "fields": [
+                                                    {"name": "stringValue", "type": ["null", "string"], "default": null},
+                                                    {"name": "intValue", "type": ["null", "string"], "default": null}
+                                                  ]
+                                                }
+                                              },
+                                              "default": []
+                                            }
+                                          ]
+                                        }
+                                      ],
+                                      "default": null
+                                    }
+                                  ]
+                                }
+                              ],
+                              "default": null
+                            }
+                          ]
+                        }
+                      },
+                      "default": []
+                    }
+                  ]
+                }
+              ],
+              "default": null
+            },
+            {
+              "name": "scopeLogs",
+              "type": {
+                "type": "array",
+                "items": {
+                  "type": "record",
+                  "name": "ScopeLogAvro",
+                  "fields": [
+                    {
+                      "name": "scope",
+                      "type": [
+                        "null",
+                        {
+                          "type": "record",
+                          "name": "ScopeAvro",
+                          "fields": [
+                            {"name": "name", "type": ["null", "string"], "default": null}
+                          ]
+                        }
+                      ],
+                      "default": null
+                    },
+                    {
+                      "name": "logRecords",
+                      "type": {
+                        "type": "array",
+                        "items": {
+                          "type": "record",
+                          "name": "LogRecordAvro",
+                          "fields": [
+                            {"name": "timeUnixNano", "type": ["null", "string"], "default": null},
+                            {"name": "observedTimeUnixNano", "type": ["null", "string"], "default": null},
+                            {"name": "severityNumber", "type": ["null", "int"], "default": null},
+                            {"name": "severityText", "type": ["null", "string"], "default": null},
+                            {
+                              "name": "body",
+                              "type": [
+                                "null",
+                                {
+                                  "type": "record",
+                                  "name": "BodyAvro",
+                                  "fields": [
+                                    {"name": "stringValue", "type": ["null", "string"], "default": null}
+                                  ]
+                                }
+                              ],
+                              "default": null
+                            },
+                            {
+                              "name": "attributes",
+                              "type": {"type": "array", "items": "AttributeAvro"},
+                              "default": []
+                            },
+                            {"name": "traceId", "type": ["null", "string"], "default": null},
+                            {"name": "spanId", "type": ["null", "string"], "default": null}
+                          ]
+                        }
+                      },
+                      "default": []
+                    }
+                  ]
+                }
+              },
+              "default": []
+            },
+            {"name": "schemaUrl", "type": ["null", "string"], "default": null}
+          ]
+        }
+      },
+      "default": []
+    }
+  ]
+}
