@@ -5,8 +5,24 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="e9342ebc-f041-458e-ac58-095001ebc029" name="Changes" comment=".">
-      <change beforePath="$PROJECT_DIR$/../.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/../.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../flink-playground/src/main/java/org/sample/flink/tabii/publisher/KafkaJsonProducer.java" beforeDir="false" afterPath="$PROJECT_DIR$/../flink-playground/src/main/java/org/sample/flink/tabii/publisher/KafkaJsonProducer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/tabii/ref_impl/flink/LogWrapperToAvroMapper.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/tabii/ref_impl/flink/StreamingTabiiLogsToS3Parquet.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/tabii/ref_impl/flink/model/TabiiLogSchema.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/tabii/ref_impl/flink/model/TabiiLogSinkSchema.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/tabii/ref_impl/flink/model/message/ArrayValue.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/tabii/ref_impl/flink/model/message/Attribute.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/tabii/ref_impl/flink/model/message/Body.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/tabii/ref_impl/flink/model/message/LogRecord.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/tabii/ref_impl/flink/model/message/LogWrapper.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/tabii/ref_impl/flink/model/message/Resource.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/tabii/ref_impl/flink/model/message/ResourceLog.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/tabii/ref_impl/flink/model/message/Scope.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/tabii/ref_impl/flink/model/message/ScopeLog.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/tabii/ref_impl/flink/model/message/Value.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/tabii/ref_impl/flink/publisher/KafkaJsonProducer.java" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -33,14 +49,15 @@
     "RunOnceActivity.git.unshallow": "true",
     "git-widget-placeholder": "master",
     "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "/Users/serkantas/dev/github/private-repos/java-works/kafka-flink-s3-ref-impl",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
     "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
     "project.structure.last.edited": "Modules",
-    "project.structure.proportion": "0.0",
-    "project.structure.side.proportion": "0.0",
+    "project.structure.proportion": "0.15",
+    "project.structure.side.proportion": "0.31724137",
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
@@ -97,6 +114,7 @@
       <workItem from="1744352872453" duration="15000" />
       <workItem from="1744352917683" duration="19000" />
       <workItem from="1744353022896" duration="326000" />
+      <workItem from="1744867516471" duration="4500000" />
     </task>
     <task id="LOCAL-00001" summary=".">
       <option name="closed" value="true" />
