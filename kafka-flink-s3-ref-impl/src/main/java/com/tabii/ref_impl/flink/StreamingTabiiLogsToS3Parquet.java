@@ -2,6 +2,7 @@ package com.tabii.ref_impl.flink;
 
 import java.time.Duration;
 
+import com.tabii.ref_impl.flink.model.Config;
 import com.tabii.ref_impl.flink.model.TabiiLogSchema;
 import com.tabii.ref_impl.flink.model.message.LogWrapper;
 import org.apache.flink.api.common.RuntimeExecutionMode;
@@ -23,8 +24,6 @@ import org.apache.flink.streaming.api.functions.source.SourceFunction;
 
 public class StreamingTabiiLogsToS3Parquet {
 
-	private static String s3Bucket = "s3a://int-avatar-test/flink-parquet/";
-	
 	public StreamingTabiiLogsToS3Parquet(SourceFunction<Long> source, SinkFunction<Long> sink) {
 	}
 
@@ -42,7 +41,9 @@ public class StreamingTabiiLogsToS3Parquet {
 
 	
 	public void execute() throws Exception {
-		
+
+		Config config = StreamingTabiiLogsToS3Parquet.readConfig();
+
 		Configuration conf = new Configuration();
 		StreamExecutionEnvironment env = StreamExecutionEnvironment.createLocalEnvironmentWithWebUI(conf);
 		env.setRuntimeMode(RuntimeExecutionMode.STREAMING);
@@ -51,9 +52,9 @@ public class StreamingTabiiLogsToS3Parquet {
 		
 		
 		KafkaSource<LogWrapper> kafkaSource = KafkaSource.<LogWrapper>builder()
-				.setBootstrapServers("localhost:9092")
-				.setTopics("flinktopic")
-				.setGroupId("flinkgroup")
+				.setBootstrapServers(config.bootstrapServers) // "localhost:9092"
+				.setTopics(config.kafkaTopic) // "flinktopic"
+				.setGroupId(config.kafkaGroup) // "flinkgroup"
 				.setStartingOffsets(OffsetsInitializer.latest())
 				.setValueOnlyDeserializer(new TabiiLogSchema()).build();
 
@@ -66,10 +67,36 @@ public class StreamingTabiiLogsToS3Parquet {
 		DataStream<com.tabii.ref_impl.flink.model.avro.LogWrapperAvro> avroStream = logStream.map(new LogWrapperToAvroMapper());
 		
 
-		avroStream.sinkTo(S3Sink(s3Bucket));
+		avroStream.sinkTo(S3Sink(config.bucketPath));
 		
 		
 		env.execute();
+	}
+
+	private static Config readConfig() {
+
+		Config config  = new Config();
+
+		config.bootstrapServers = System.getenv("BOOTSTRAP_SERVERS");
+		config.kafkaTopic = System.getenv("KAFKA_TOPIC");
+		config.kafkaGroup = System.getenv("KAFKA_GROUP");
+		config.bucketPath = System.getenv("BUCKET_PATH");
+
+		// Validate environment variables
+		if (config.bootstrapServers == null || config.bootstrapServers.isEmpty()) {
+			throw new IllegalStateException("BOOTSTRAP_SERVERS environment variable is not set or empty");
+		}
+		if (config.kafkaTopic  == null || config.kafkaTopic .isEmpty()) {
+			throw new IllegalStateException("KAFKA_TOPIC environment variable is not set or empty");
+		}
+		if (config.kafkaGroup  == null || config.kafkaGroup .isEmpty()) {
+			throw new IllegalStateException("KAFKA_GROUP environment variable is not set or empty");
+		}
+		if (config.bucketPath == null || config.bucketPath.isEmpty()) {
+			throw new IllegalStateException("BUCKET_PATH environment variable is not set or empty");
+		}
+
+		return config;
 	}
 
 	public static void main(String[] args) throws Exception {

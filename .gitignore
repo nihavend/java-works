@@ -6,3 +6,4 @@ flink-playground/target/
 flink-playground/.vscode/settings.json
 .DS_Store
 .metadata
+FlinkKafkaToS3/target/classes

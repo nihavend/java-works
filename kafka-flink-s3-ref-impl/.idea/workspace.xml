@@ -4,11 +4,26 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
+<<<<<<< HEAD
     <list default="true" id="e9342ebc-f041-458e-ac58-095001ebc029" name="Changes" comment="." />
+=======
+    <list default="true" id="e9342ebc-f041-458e-ac58-095001ebc029" name="Changes" comment=".">
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/tabii/ref_impl/flink/model/Config.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/tabii/ref_impl/flink/StreamingTabiiLogsToS3Parquet.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/tabii/ref_impl/flink/StreamingTabiiLogsToS3Parquet.java" afterDir="false" />
+    </list>
+>>>>>>> e5f882f56a0c692fc8a82847b74e651c071316df
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+      </list>
+    </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
@@ -36,6 +51,7 @@
   </component>
   <component name="PropertiesComponent">{
   &quot;keyToString&quot;: {
+    &quot;Application.KafkaJsonProducer (1).executor&quot;: &quot;Run&quot;,
     &quot;Application.KafkaJsonProducer.executor&quot;: &quot;Run&quot;,
     &quot;Application.StreamingTabiiLogsToS3Parquet.executor&quot;: &quot;Run&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
@@ -55,6 +71,19 @@
   }
 }</component>
   <component name="RunManager" selected="Application.StreamingTabiiLogsToS3Parquet">
+    <configuration name="KafkaJsonProducer (1)" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="com.tabii.ref_impl.flink.publisher.KafkaJsonProducer" />
+      <module name="kafka-flink-s3-ref-impl" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.tabii.ref_impl.flink.publisher.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <configuration name="KafkaJsonProducer" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="com.tabii.ref_impl.flink.publisher.KafkaJsonProducer" />
       <module name="kafka-flink-s3-ref-impl" />
@@ -69,6 +98,12 @@
       </method>
     </configuration>
     <configuration name="StreamingTabiiLogsToS3Parquet" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <envs>
+        <env name="BOOTSTRAP_SERVERS" value="localhost:9092" />
+        <env name="BUCKET_PATH" value="s3a://int-avatar-test/flink-parquet/" />
+        <env name="KAFKA_GROUP" value="flinkgroup" />
+        <env name="KAFKA_TOPIC" value="flinktopic" />
+      </envs>
       <option name="MAIN_CLASS_NAME" value="com.tabii.ref_impl.flink.StreamingTabiiLogsToS3Parquet" />
       <module name="kafka-flink-s3-ref-impl" />
       <extension name="coverage">
@@ -81,9 +116,15 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
+    <list>
+      <item itemvalue="Application.KafkaJsonProducer" />
+      <item itemvalue="Application.KafkaJsonProducer (1)" />
+      <item itemvalue="Application.StreamingTabiiLogsToS3Parquet" />
+    </list>
     <recent_temporary>
       <list>
         <item itemvalue="Application.StreamingTabiiLogsToS3Parquet" />
+        <item itemvalue="Application.KafkaJsonProducer (1)" />
         <item itemvalue="Application.KafkaJsonProducer" />
       </list>
     </recent_temporary>
@@ -109,6 +150,8 @@
       <workItem from="1744353022896" duration="326000" />
       <workItem from="1744867516471" duration="4500000" />
       <workItem from="1744956399095" duration="432000" />
+      <workItem from="1744956962318" duration="617000" />
+      <workItem from="1744959116311" duration="2689000" />
     </task>
     <task id="LOCAL-00001" summary=".">
       <option name="closed" value="true" />
