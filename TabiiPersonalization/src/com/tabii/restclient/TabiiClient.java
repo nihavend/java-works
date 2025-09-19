@@ -14,6 +14,8 @@ import java.net.URL;
 import java.util.Locale;
 import java.util.Map;
 
+import com.google.gson.*;
+import com.tabii.data.model.Queue;
 import com.tabii.data.model.entities.ProfileCard;
 import com.tabii.loaders.config.ConfigLoader;
 import com.tabii.loaders.menu.MenuData;
@@ -28,8 +30,18 @@ public class TabiiClient {
 	public static void main(String[] args) {
 
 		try {
+			
+			if(args.length < 2 || args[0] == null || args[1] == null) {
+				System.out.println("Usaage : username password");
+				System.exit(-1);
+			}
+			
+			String userName = args[0];
+			String password = args[1];
+					
+			
 			// 1. adım
-			LoginResponse loginResponse = login();
+			LoginResponse loginResponse = login(userName, password);
 			System.out.println("AccessToken : " + loginResponse.getAccessToken());
 			System.out.println("RefreshToken : " + loginResponse.getRefreshToken());
 			System.out.println("Comparison of refresh and access token : "
@@ -70,12 +82,32 @@ public class TabiiClient {
 					break;
 				}
 			}
+			
+			// 6. adım
+			Queue queue = getQueue(targetId, profileTokenResponse.getAccessToken());
+			System.out.println("Row count of queue : " + queue.getData().size());
 
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
+	}
+
+	private static Queue getQueue(String targetId, String accessToken) throws IOException {
+
+		String reqUrl = "https://eu1.tabii.com/apigateway/catalog/v1/pages/queues/" + targetId + "?targetContentTypes=movie,series&targetCategoryIds=";
+
+
+		Map<String, String> headerMap = Map.ofEntries(entry("Authorization", "Bearer " + accessToken));
+
+		String response = restResponse(null, reqUrl, headerMap, "GET");
+
+		System.out.println("Queue json : " + prettyPrint(response));
+		
+		Queue queue = TabiiJsonParser.parseQueueResponse(response.toString());
+
+		return queue;
 	}
 
 	private static LoginResponse getProfileToken(String profileSK, String accessToken, String refreshToken)
@@ -109,9 +141,17 @@ public class TabiiClient {
 
 	}
 
-	private static LoginResponse login() throws IOException {
-		String loginUrl = "https://eu1.tabii.com/apigateway/auth/v2/login";
-		return token(loginUrl);
+	private static LoginResponse login(String userName, String password) throws IOException {
+		
+		String reqUrl = "https://eu1.tabii.com/apigateway/auth/v2/login";
+		
+		String requestBody = "{ \"email\": \"" + userName + "\", \"password\": \"" + password + "\" }";
+		
+		String response = restResponse(requestBody, reqUrl, null, "POST");
+		
+		LoginResponse loginResponse = TabiiJsonParser.parseLoginResponse(response.toString());
+		
+		return loginResponse;
 	}
 
 	public static String restResponse(String requestBody, String urlString, Map<String, String> headerMap,
@@ -152,7 +192,7 @@ public class TabiiClient {
 	private static LoginResponse token(String urlString) throws IOException {
 
 		// Example login body
-		String requestBody = "{ \"email\": \"serkan_tas@hotmail.com\", \"password\": \"DummyPasswd1!+\" }";
+		String requestBody = "{ \"email\": \"a.b@c.com\", \"password\": \"password\" }";
 
 		HttpURLConnection conn = createConnection(urlString, "POST");
 
@@ -233,5 +273,12 @@ public class TabiiClient {
 			e.printStackTrace();
 		}
 		return null;
+	}
+	
+	public static String prettyPrint(String uglyJsonString) {
+		Gson gson = new GsonBuilder().setPrettyPrinting().create();
+		JsonElement je = JsonParser.parseString(uglyJsonString);
+		String prettyJsonString = gson.toJson(je);
+		return prettyJsonString;
 	}
 }
