@@ -1,0 +1,4 @@
+
+# to deploy dynamodb locally : https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/DynamoDBLocal.DownloadingAndRunning.html
+# dynamodb client : https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/workbench.settingup.html
+

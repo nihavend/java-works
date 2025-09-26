@@ -1,0 +1,184 @@
+
+// uuid_generate_v4() kullanabilmek için
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
+//Entities of p13n project (SST-DB)
+
+// Users (Tabii Team)
+
+CREATE TABLE users (
+    id SERIAL PRIMARY KEY,
+    first_name VARCHAR(100) NOT NULL,
+    last_name VARCHAR(100) NOT NULL,
+    modified_user VARCHAR(100),
+    modified_date TIMESTAMP,
+	created_user VARCHAR(100),
+    created_date TIMESTAMP DEFAULT now()
+);
+
+
+INSERT INTO users (
+    first_name, last_name, modified_user, modified_date, created_user, created_date
+) VALUES
+    ('Name', 'Sirname',
+    'name.sirname@trt.net.com', '2025-05-13T18:47:14.904Z',
+    'name.sirname@trt.net.com', '2025-05-13T18:47:14.904Z')
+;
+
+
+// Continents
+
+CREATE TABLE continents (
+    id INT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    modified_user INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    modified_date TIMESTAMP,
+	created_user INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    created_date TIMESTAMP DEFAULT now()
+);
+
+
+INSERT INTO continents (
+    id, name, modified_user, modified_date, created_user, created_date
+) VALUES
+    (1, 'Africa', 1, '2025-05-13T18:47:14.904Z', 1, '2025-05-13T18:47:14.904Z'),
+    (2, 'Antarctica', 1, '2025-05-13T18:47:14.904Z', 1, '2025-05-13T18:47:14.904Z'),
+    (3, 'Asia', 1, '2025-05-13T18:47:14.904Z', 1, '2025-05-13T18:47:14.904Z'),
+    (4, 'Australia', 1, '2025-05-13T18:47:14.904Z', 1, '2025-05-13T18:47:14.904Z'),
+    (5, 'Europe', 1, '2025-05-13T18:47:14.904Z', 1, '2025-05-13T18:47:14.904Z'),
+    (6, 'North America', 1, '2025-05-13T18:47:14.904Z', 1, '2025-05-13T18:47:14.904Z'),
+    (7, 'South America', 1, '2025-05-13T18:47:14.904Z', 1, '2025-05-13T18:47:14.904Z'),
+    (8, 'Oceania', 1, '2025-05-13T18:47:14.904Z', 1, '2025-05-13T18:47:14.904Z')
+;
+
+
+
+
+Africa, Antarctica, Asia, Australia, Europe, North America, and South America
+
+CREATE TABLE countries (
+    id SERIAL PRIMARY KEY,
+    name TEXT NOT NULL,                        -- English short name
+    name_lower TEXT GENERATED ALWAYS AS (LOWER(name)) STORED,  -- Lowercase version (auto-generated)
+    alpha_2_code CHAR(2) NOT NULL,              -- Alpha-2 code (e.g., 'AF')
+    alpha_3_code CHAR(3) NOT NULL,              -- Alpha-3 code (e.g., 'AFG')
+    numeric_code CHAR(3) NOT NULL,             -- Numeric code (e.g., 4)
+    iso_3166_2 VARCHAR(20),               -- Full ISO 3166-2 code (e.g., 'ISO 3166-2:AF')
+    continent_id INT NOT NULL REFERENCES continents(id) ON DELETE CASCADE,   
+    modified_user VARCHAR(100),
+    modified_date TIMESTAMP,
+    created_user VARCHAR(100),
+    created_date TIMESTAMP DEFAULT now()
+);
+
+
+
+Contributors        ContributorRoles        Contents
+------------        ------------------      -------------
+id (PK)             id (PK)                 id (PK)
+first_name -------- contributor_id (FK)     title
+last_name           content_id (FK) ------- release_year
+birth_date          role_type               genre
+nationality         character_name (nullable)
+
+
+CREATE TABLE contributors (
+    id UUID PRIMARY KEY,
+    first_name VARCHAR(100) NOT NULL,
+    last_name VARCHAR(100) NOT NULL,
+    nationality VARCHAR(100),
+    birth_date TIMESTAMP,
+    published_date TIMESTAMP,
+    published_status VARCHAR(100),
+    created_date TIMESTAMP DEFAULT now(),
+    modified_date DATE,
+    modified_user VARCHAR(100)
+);
+
+
+
+
+
+
+
+
+
+CREATE TABLE contributor_roles (
+    id UUID PRIMARY KEY,
+    contributor_id UUID NOT NULL REFERENCES contributors(id) ON DELETE CASCADE,
+    content_id UUID NOT NULL REFERENCES contents(id) ON DELETE CASCADE,
+    role_type VARCHAR(50) NOT NULL, -- örn: 'Actor', 'Director', 'Producer'
+    character_name VARCHAR(100) -- sadece oyuncular için
+);
+
+
+
+
+
+
+
+
+
+CREATE TABLE contents (
+    id UUID PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    release_year INT,
+    genre VARCHAR(100)
+);
+
+
+
+
+SELECT c.first_name, c.last_name, cr.role_type
+FROM contributor_roles cr
+JOIN contributors c ON cr.contributor_id = c.id
+WHERE cr.content_id = 'CONTENT_ID';
+
+
+SELECT ct.title, cr.role_type, cr.character_name
+FROM contributor_roles cr
+JOIN contents ct ON cr.content_id = ct.id
+WHERE cr.contributor_id = 'CONTRIBUTOR_ID';
+
+
+SELECT DISTINCT c.first_name, c.last_name
+FROM contributor_roles cr
+JOIN contributors c ON cr.contributor_id = c.id
+WHERE cr.role_type = 'Director';
+
+
+INSERT INTO contributors (id, first_name, last_name, birth_date, nationality) VALUES
+('uuid-actor-01', 'Leonardo', 'DiCaprio', '1974-11-11', 'American'),
+('uuid-director-01', 'Christopher', 'Nolan', '1970-07-30', 'British-American'),
+('uuid-actress-01', 'Natalie', 'Portman', '1981-06-09', 'Israeli-American'),
+('uuid-producer-01', 'Kathleen', 'Kennedy', '1953-06-05', 'American'),
+('uuid-actor-02', 'Robert', 'Downey Jr.', '1965-04-04', 'American');
+
+
+INSERT INTO contents (id, title, release_year, genre) VALUES
+('uuid-movie-01', 'Inception', 2010, 'Sci-Fi'),
+('uuid-movie-02', 'Interstellar', 2014, 'Sci-Fi'),
+('uuid-movie-03', 'Black Swan', 2010, 'Psychological Thriller'),
+('uuid-movie-04', 'Iron Man', 2008, 'Action'),
+('uuid-movie-05', 'The Dark Knight', 2008, 'Action');
+
+
+INSERT INTO contributor_roles (id, contributor_id, content_id, role_type, character_name) VALUES
+('uuid-role-01', 'uuid-actor-01', 'uuid-movie-01', 'Actor', 'Dom Cobb'),
+('uuid-role-02', 'uuid-director-01', 'uuid-movie-01', 'Director', NULL),
+('uuid-role-03', 'uuid-actress-01', 'uuid-movie-03', 'Actor', 'Nina Sayers'),
+('uuid-role-04', 'uuid-actor-02', 'uuid-movie-04', 'Actor', 'Tony Stark'),
+('uuid-role-05', 'uuid-director-01', 'uuid-movie-05', 'Director', NULL);
+
+
+SELECT c.first_name, c.last_name, cr.role_type, cr.character_name
+FROM contributor_roles cr
+JOIN contributors c ON cr.contributor_id = c.id
+WHERE cr.content_id = 'uuid-movie-01';
+
+
+SELECT ct.title, cr.role_type, cr.character_name
+FROM contributor_roles cr
+JOIN contents ct ON cr.content_id = ct.id
+WHERE cr.contributor_id = 'uuid-actress-01';
+
