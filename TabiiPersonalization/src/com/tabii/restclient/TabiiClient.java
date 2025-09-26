@@ -189,6 +189,8 @@ public class TabiiClient {
 
 	}
 
+	
+	@SuppressWarnings("unused")
 	private static LoginResponse token(String urlString) throws IOException {
 
 		// Example login body
