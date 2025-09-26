@@ -3,8 +3,26 @@ package com.tabii.restclient.responsemodels;
 import java.io.IOException;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.tabii.data.model.Queue;
 
 public class TabiiJsonParser {
+	
+	public static Queue parseQueueResponse(String jsonString) {
+
+		// Create ObjectMapper instance
+		ObjectMapper objectMapper = new ObjectMapper();
+		Queue queue = null;
+		try {
+			// Read JSON file and map to ContentList object
+			queue = objectMapper.readValue(jsonString, Queue.class);
+		} catch (IOException e) {
+			System.err.println("Error reading JSON file: " + e.getMessage());
+			System.out.println("Client Response JSON " + jsonString);
+			e.printStackTrace();
+		}
+		
+		return queue;
+	}
 	
 	public static ProfileListResponse parseProfileListResponse(String jsonString) {
 
