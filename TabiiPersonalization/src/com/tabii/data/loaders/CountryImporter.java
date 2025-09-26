@@ -1,4 +1,4 @@
-package com.tabii.dataloaders;
+package com.tabii.data.loaders;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -192,7 +192,7 @@ public class CountryImporter {
 				""";
 
 		try (PreparedStatement ps = conn.prepareStatement(sql)) {
-			String user = "system";
+			int defuserId = 1;
 			Timestamp now = new Timestamp(System.currentTimeMillis());
 
 			ps.setString(1, data.name);
@@ -201,9 +201,9 @@ public class CountryImporter {
 			ps.setString(4, data.numeric);
 			ps.setString(5, data.iso3166_2);
 			ps.setObject(6, continentId);
-			ps.setString(7, user);
+			ps.setInt(7, defuserId);
 			ps.setTimestamp(8, now);
-			ps.setString(9, user);
+			ps.setInt(9, defuserId);
 
 			ps.executeUpdate();
 		}
