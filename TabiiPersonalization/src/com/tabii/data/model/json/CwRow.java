@@ -1,4 +1,4 @@
-package com.tabii.data.model;
+package com.tabii.data.model.json;
 
 public class CwRow extends Row {
 

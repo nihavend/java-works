@@ -1,8 +1,8 @@
-package com.tabii.data.model;
+package com.tabii.data.model.json;
 
 import java.util.ArrayList;
 
-import com.tabii.data.model.entities.sub.Image;
+import com.tabii.data.model.json.entities.sub.Image;
 
 public class SpecialRow extends Row {
 

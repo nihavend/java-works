@@ -1,0 +1,48 @@
+{
+	"_id": {
+		"$numberLong": "468248"
+	},
+	"audit": {
+		"created": {
+			"date": "2025-01-08T14:22:31.710Z",
+			"user": {
+				"email": "ozer.ocek@trtworld.com",
+				"name": "Ozer OCEK"
+			}
+		},
+		"modified": {
+			"date": "2025-05-13T16:27:09.186Z"
+		}
+	},
+	"body": [],
+	"fields": {
+		"display_title": {
+			"text": "FA Cup"
+		},
+		"pgcode": {
+			"text": "FA"
+		}
+	},
+	"id": {
+		"$numberLong": "468248"
+	},
+	"isActive": true,
+	"metadata": [],
+	"path": "/468248",
+	"paths": [
+		"/468248"
+	],
+	"published": {
+		"date": "2025-05-13T16:27:15.684Z",
+		"status": true,
+		"revisionId": {
+			"$numberLong": "2419015"
+		}
+	},
+	"site": "int",
+	"title": "FA Cup (FAC)",
+	"type": "category",
+	"viewCount": {
+		"$numberLong": "0"
+	}
+}

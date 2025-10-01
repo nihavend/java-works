@@ -4,9 +4,9 @@ import java.io.File;
 import java.io.IOException;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.tabii.data.model.SpecialRow;
-import com.tabii.data.model.entities.GenreCard;
-import com.tabii.data.model.entities.ShowCard;
+import com.tabii.data.model.json.SpecialRow;
+import com.tabii.data.model.json.entities.GenreCard;
+import com.tabii.data.model.json.entities.ShowCard;
 
 // Main class to load and parse JSON from a file
 public class SpecialRowJSONLoader {

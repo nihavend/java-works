@@ -1,0 +1,8 @@
+Generate a Java program that:
+1. Takes a queue ID as input from the console.
+2. Constructs a Redis key in the format `queue:<id>` and connects to Redis on `localhost:6379`.
+3. Retrieves queue data from Redis using the key `queue:<id>`.
+4. Removes any `id` field from the queue JSON if present.
+5. The queue JSON contains a `rows` array of row IDs. Replace the `rows` key with `data` in the queue JSON.
+6. For each row ID, fetch the row JSON from Redis using the key `row:<row_id>` and add the row ID as an `id` field in the row content.
+7. Each row JSON contains a `shows` array of show IDs. Replace the `shows` key with `content`. For each show ID, fetch the show JSON from Redis using the key `show:<show_id>` and add the show ID as an `id

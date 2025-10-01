@@ -5,8 +5,8 @@ import java.nio.file.Paths;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
-import com.tabii.data.model.Queue;
-import com.tabii.data.model.Row;
+import com.tabii.data.model.json.Queue;
+import com.tabii.data.model.json.Row;
 
 // Main class to load and parse JSON from a file
 public class DynamicQueueJSONLoader {

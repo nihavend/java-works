@@ -1,16 +1,16 @@
-package com.tabii.data.model.json.loader;
+package com.tabii.data.transformers.jsonToPg;
 import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Properties;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.tabii.utils.CommonUtils;
+import com.tabii.utils.PgProperties;
 
 public class JsonImageIdUpdater {
 
@@ -21,10 +21,7 @@ public class JsonImageIdUpdater {
             System.exit(1);
         }
 
-	    Properties dbProps = CommonUtils.loadDbProperties();
-	    String dbUrl = dbProps.getProperty("pg.db.url");
-	    String dbUser = dbProps.getProperty("pg.db.user");
-	    String dbPassword = dbProps.getProperty("pg.db.password");
+        PgProperties pgProperties = CommonUtils.getPgConnectionProps();
         
         
         String jsonFilePath = args[0];
@@ -34,7 +31,7 @@ public class JsonImageIdUpdater {
             JsonNode rootNode = mapper.readTree(new File(jsonFilePath));
 
             // Connect to PostgreSQL
-            try (Connection conn = DriverManager.getConnection(dbUrl, dbUser, dbPassword)) {
+            try (Connection conn = DriverManager.getConnection(pgProperties.getDbUrl(), pgProperties.getDbUrl(), pgProperties.getDbPassword())) {
                 // Process all image nodes recursively
                 processNode(rootNode, conn);
 

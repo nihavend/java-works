@@ -1,9 +1,9 @@
-package com.tabii.data.model.entities;
+package com.tabii.data.model.json.entities;
 
 import java.util.ArrayList;
 
-import com.tabii.data.model.entities.sub.Badge;
-import com.tabii.data.model.entities.sub.Image;
+import com.tabii.data.model.json.entities.sub.Badge;
+import com.tabii.data.model.json.entities.sub.Image;
 
 public class Banner {
 	

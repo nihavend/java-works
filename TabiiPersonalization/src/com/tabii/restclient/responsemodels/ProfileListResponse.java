@@ -2,7 +2,7 @@ package com.tabii.restclient.responsemodels;
 
 import java.util.List;
 
-import com.tabii.data.model.entities.ProfileCard;
+import com.tabii.data.model.json.entities.ProfileCard;
 
 // Class representing the root JSON object
 public class ProfileListResponse {

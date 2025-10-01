@@ -3,7 +3,7 @@ package com.tabii.restclient.responsemodels;
 import java.io.IOException;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.tabii.data.model.Queue;
+import com.tabii.data.model.json.Queue;
 
 public class TabiiJsonParser {
 	

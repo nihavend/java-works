@@ -1,12 +1,7 @@
-package com.tabii.data.model.entities;
+package com.tabii.data.model.json.entities;
 
-import com.tabii.data.model.Row;
-import com.tabii.data.model.RowType;
+import com.tabii.data.model.json.Row;
 
 public class Special extends Row {
-
-	public Special(RowType rowType) {
-		super(rowType);
-	}
 
 }

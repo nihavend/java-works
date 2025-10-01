@@ -1,8 +1,8 @@
-package com.tabii.data.model.entities;
+package com.tabii.data.model.json.entities;
 
 import java.util.List;
 
-import com.tabii.data.model.entities.sub.Image;
+import com.tabii.data.model.json.entities.sub.Image;
 
 //Class for Genre
 public class GenreCard {

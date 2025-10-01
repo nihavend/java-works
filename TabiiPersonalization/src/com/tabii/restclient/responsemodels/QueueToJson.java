@@ -1,8 +1,7 @@
-package com.tabii.data.loaders.redis;
+package com.tabii.restclient.responsemodels;
 
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Scanner;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -14,10 +13,12 @@ import com.google.gson.JsonParser;
 import redis.clients.jedis.Jedis;
 
 public class QueueToJson {
+	@SuppressWarnings("resource")
 	public static void main(String[] args) {
-		Scanner scanner = new Scanner(System.in);
-		System.out.print("Enter queue ID: ");
-		String id = scanner.nextLine().trim();
+		// Scanner scanner = new Scanner(System.in);
+		// System.out.print("Enter queue ID: ");
+		String id = "154830_134666";// scanner.nextLine().trim();
+		
 		String queueKey = "queue:" + id; // Construct queue key as queue:id
 
 		Jedis jedis = new Jedis("localhost", 6379); // Redis connection with port 6379
@@ -69,14 +70,14 @@ public class QueueToJson {
 					showJson.addProperty("id", showId); // Add show ID as "id" field
 
 					// Process badge, genre, and image arrays
-					String[] objectArrayFields = { "badges", "genres", "images" };
+					String[] objectArrayFields = { "badges", "genre", "images" };
 					for (String field : objectArrayFields) {
 						JsonArray objIds = showJson.getAsJsonArray(field);
 						if (objIds != null) {
 							JsonArray fullObjs = new JsonArray();
 							for (JsonElement objIdElem : objIds) {
 								String objId = objIdElem.getAsString();
-								String objKey = field.substring(0, field.length() - 1) + ":" + objId; // e.g.,
+								String objKey = field.substring(0, field.length()) + ":" + objId; // e.g.,
 																										// badge:<id>,
 																										// genre:<id>,
 																										// image:<id>
@@ -148,6 +149,6 @@ public class QueueToJson {
 		}
 
 		jedis.close();
-		scanner.close();
+		// scanner.close();
 	}
 }

@@ -1,0 +1,66 @@
+{
+	"_id": {
+		"$numberLong": "510958"
+	},
+	"audit": {
+		"created": {
+			"date": "2025-03-27T08:32:15.808Z",
+			"user": {
+				"email": "cagil.isik@trt.net.tr",
+				"name": "Çağıl Işık"
+			}
+		},
+		"modified": {
+			"date": "2025-05-13T16:19:09.877Z"
+		}
+	},
+	"body": [],
+	"fields": {
+		"layout": {
+			"value": "Icon",
+			"key": "icon",
+			"metadata": {}
+		},
+		"show_card_location": {
+			"key": "upper_left_corner",
+			"metadata": {},
+			"value": "Upper Left Corner"
+		},
+		"banner_location": {
+			"value": "On Top Of The Logo",
+			"key": "on_top_of_the_logo",
+			"metadata": {}
+		},
+		"badge_image": {
+			"url": "https://cms-tabii-public-image.tabii.com/int/26087.jpeg",
+			"title": "Tabii Original Badges",
+			"type": "image",
+			"fileName": "26087.jpeg"
+		},
+		"display_title": {
+			"text": "tabii original program"
+		}
+	},
+	"id": {
+		"$numberLong": "510958"
+	},
+	"isActive": true,
+	"metadata": [],
+	"path": "/510958",
+	"paths": [
+		"/510958"
+	],
+	"published": {
+		"date": "2025-05-13T16:19:16.476Z",
+		"status": true,
+		"revisionId": {
+			"$numberLong": "2417330"
+		}
+	},
+	"site": "int",
+	"title": "tabii Original Program",
+	"type": "badges",
+	"viewCount": {
+		"$numberLong": "0"
+	}
+}

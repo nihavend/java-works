@@ -1,11 +1,11 @@
-package com.tabii.data.model.entities;
+package com.tabii.data.model.json.entities;
 
 import java.util.List;
 
-import com.tabii.data.model.entities.sub.Badge;
-import com.tabii.data.model.entities.sub.ExclusiveBadge;
-import com.tabii.data.model.entities.sub.Image;
-import com.tabii.data.model.entities.sub.Media;
+import com.tabii.data.model.json.entities.sub.Badge;
+import com.tabii.data.model.json.entities.sub.ExclusiveBadge;
+import com.tabii.data.model.json.entities.sub.Image;
+import com.tabii.data.model.json.entities.sub.Media;
 
 // Class representing the root JSON object
 public class ShowCard {

@@ -1,4 +1,4 @@
-package com.tabii.data.migration.mongoTopg;
+package com.tabii.data.transformers.mongoToPg;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -21,28 +21,6 @@ import com.tabii.utils.PgProperties;
 
 
 public class Layouts {
-
-    // Recursive method to find all "layout" nodes
-    private static void findLayoutNodes(Document doc, List<Document> results) {
-        for (Map.Entry<String, Object> entry : doc.entrySet()) {
-            String key = entry.getKey();
-            Object value = entry.getValue();
-
-            if ("layout".equals(key) && value instanceof Document) {
-                results.add((Document) value);
-            }
-
-            if (value instanceof Document) {
-                findLayoutNodes((Document) value, results);
-            } else if (value instanceof List) {
-                for (Object item : (List<?>) value) {
-                    if (item instanceof Document) {
-                        findLayoutNodes((Document) item, results);
-                    }
-                }
-            }
-        }
-    }
 
     public static void main(String[] args) {
         try {
@@ -102,6 +80,28 @@ public class Layouts {
             }
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+    
+    // Recursive method to find all "layout" nodes
+    private static void findLayoutNodes(Document doc, List<Document> results) {
+        for (Map.Entry<String, Object> entry : doc.entrySet()) {
+            String key = entry.getKey();
+            Object value = entry.getValue();
+
+            if ("layout".equals(key) && value instanceof Document) {
+                results.add((Document) value);
+            }
+
+            if (value instanceof Document) {
+                findLayoutNodes((Document) value, results);
+            } else if (value instanceof List) {
+                for (Object item : (List<?>) value) {
+                    if (item instanceof Document) {
+                        findLayoutNodes((Document) item, results);
+                    }
+                }
+            }
         }
     }
 }

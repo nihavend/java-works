@@ -1,4 +1,4 @@
-package com.tabii.data.model.json.loader;
+package com.tabii.data.transformers.jsonToPg;
 import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;

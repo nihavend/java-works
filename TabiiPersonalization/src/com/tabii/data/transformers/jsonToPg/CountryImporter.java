@@ -1,4 +1,4 @@
-package com.tabii.data.loaders;
+package com.tabii.data.transformers.jsonToPg;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -16,9 +16,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 
 import com.tabii.utils.CommonUtils;
+import com.tabii.utils.PgProperties;
 
 public class CountryImporter {
 
@@ -39,14 +39,11 @@ public class CountryImporter {
 	}
 
 	public static void main(String[] args) {
-		
-	    Properties dbProps = CommonUtils.loadDbProperties();
-	    String dbUrl = dbProps.getProperty("pg.db.url");
-	    String dbUser = dbProps.getProperty("pg.db.user");
-	    String dbPassword = dbProps.getProperty("pg.db.password");
-		
-	    String dataFilePath = dbProps.getProperty("pg.db.datafilepath");
-		
+
+		PgProperties pgProperties = CommonUtils.getPgConnectionProps();
+
+		String dataFilePath = pgProperties.getDatafilepath();
+
 		String continentCountryFile = dataFilePath + "countries-continents.csv";
 		String isoDataFile = dataFilePath + "iso-country-codes.csv";
 
@@ -62,7 +59,7 @@ public class CountryImporter {
 			return;
 		}
 
-		try (Connection conn = DriverManager.getConnection(dbUrl, dbUser, dbPassword)) {
+		try (Connection conn = DriverManager.getConnection(pgProperties.getDbUrl(), pgProperties.getDbUrl(), pgProperties.getDbPassword())) {
 			conn.setAutoCommit(false);
 
 			Map<String, Integer> continentNameToId = fetchContinentIds(conn);
@@ -221,7 +218,5 @@ public class CountryImporter {
 			e.printStackTrace();
 		}
 	}
-
-
 
 }

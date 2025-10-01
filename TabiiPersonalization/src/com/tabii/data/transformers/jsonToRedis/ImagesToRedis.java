@@ -1,4 +1,4 @@
-package com.tabii.data.loaders.redis;
+package com.tabii.data.transformers.jsonToRedis;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;

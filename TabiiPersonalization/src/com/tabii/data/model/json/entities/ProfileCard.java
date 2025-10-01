@@ -1,8 +1,8 @@
-package com.tabii.data.model.entities;
+package com.tabii.data.model.json.entities;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.tabii.data.model.entities.sub.Download;
-import com.tabii.data.model.entities.sub.Player;
+import com.tabii.data.model.json.entities.sub.Download;
+import com.tabii.data.model.json.entities.sub.Player;
 
 public class ProfileCard {
 

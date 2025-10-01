@@ -15,8 +15,8 @@ import java.util.Locale;
 import java.util.Map;
 
 import com.google.gson.*;
-import com.tabii.data.model.Queue;
-import com.tabii.data.model.entities.ProfileCard;
+import com.tabii.data.model.json.Queue;
+import com.tabii.data.model.json.entities.ProfileCard;
 import com.tabii.loaders.config.ConfigLoader;
 import com.tabii.loaders.menu.MenuData;
 import com.tabii.loaders.menu.MenuItem;

@@ -1,0 +1,23 @@
+-- ============= CATEGORIES ===================
+CREATE TABLE IF NOT EXISTS public.categories (
+    id BIGINT PRIMARY KEY,
+    isActive BOOLEAN,
+    path VARCHAR(200),
+    site VARCHAR(10),
+    title TEXT,
+    viewcount BIGINT,
+    published_date TIMESTAMP,
+    published_status VARCHAR(100),
+    published_revisionId BIGINT,
+    modified_user INT REFERENCES users(id) ON DELETE CASCADE,
+    modified_date TIMESTAMP,
+    created_user INT REFERENCES users(id) ON DELETE CASCADE,
+    created_date TIMESTAMP DEFAULT now()
+);
+
+-- ============= CATEGORY_IMAGES RELATION ===================
+CREATE TABLE IF NOT EXISTS public.category_images (
+    category_id BIGINT REFERENCES categories(id) ON DELETE CASCADE,
+    image_id INT REFERENCES images(id) ON DELETE CASCADE,
+    PRIMARY KEY (category_id, image_id)
+);

@@ -1,0 +1,9 @@
+1. need a java program getting queue id as parameter from console 
+2. reads the queue data from redis with the given key 
+3. in queue data there is also a list of rows 
+4. replaces row ids with row contents from redis 
+5. row contens tehre is list of shows 
+6. replace show ids with show content from redis 
+7. show contains arrays of objects also stored in redis with keys 
+8. replace also these id with the contents from redi respectively 
+9. print the created json to a file

@@ -1,0 +1,26 @@
+CREATE TABLE badges (
+    id SERIAL PRIMARY KEY,
+	isActive BOOL,
+	path VARCHAR(100),
+	site CHAR(3),
+	title TEXT,
+	display_title TEXT,
+	layoutId INT NOT NULL REFERENCES layouts(id) ON DELETE CASCADE,
+	viewcount BIGINT,
+    published_date TIMESTAMP,
+    published_status VARCHAR(100),
+    published_revisionId BIGINT,
+    modified_user INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    modified_date DATE,
+    created_user INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    created_date TIMESTAMP DEFAULT now()
+);
+
+
+-- Badge images table
+CREATE TABLE IF NOT EXISTS public.badge_images
+(
+    badge_id BIGINT NOT NULL REFERENCES badges(id) ON DELETE CASCADE,
+    image_id INT NOT NULL REFERENCES images(id) ON DELETE CASCADE,
+    PRIMARY KEY (badge_id, image_id)
+);

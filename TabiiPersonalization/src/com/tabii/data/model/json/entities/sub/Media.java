@@ -1,4 +1,4 @@
-package com.tabii.data.model.entities.sub;
+package com.tabii.data.model.json.entities.sub;
 
 //Class for Image
 public class Media {

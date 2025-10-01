@@ -7,13 +7,13 @@ import com.fasterxml.jackson.core.ObjectCodec;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.tabii.data.model.BannerRow;
-import com.tabii.data.model.CwRow;
-import com.tabii.data.model.GenreRow;
-import com.tabii.data.model.LiveStreamRow;
-import com.tabii.data.model.Row;
-import com.tabii.data.model.ShowRow;
-import com.tabii.data.model.SpecialRow;
+import com.tabii.data.model.json.BannerRow;
+import com.tabii.data.model.json.CwRow;
+import com.tabii.data.model.json.GenreRow;
+import com.tabii.data.model.json.LiveStreamRow;
+import com.tabii.data.model.json.Row;
+import com.tabii.data.model.json.ShowRow;
+import com.tabii.data.model.json.SpecialRow;
 
 public class RowDeserializer extends JsonDeserializer<Row> {
     @Override

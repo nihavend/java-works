@@ -1,27 +1,22 @@
 package com.tabii.utils;
 
 public class MongoProperties {
-	public MongoProperties(String pgUrl, String pgUser, String pgPass) {
+
+	public MongoProperties(String mongoUri, String mongoDb) {
 		super();
-		this.pgUrl = pgUrl;
-		this.pgUser = pgUser;
-		this.pgPass = pgPass;
+		this.mongoUri = mongoUri;
+		this.mongoDb = mongoDb;
 	}
 
-	String pgUrl;
-	String pgUser;
-	String pgPass;
+	String mongoUri;
+	String mongoDb;
 
-	public String getPgUrl() {
-		return pgUrl;
+	public String getMongoUri() {
+		return mongoUri;
 	}
 
-	public String getPgUser() {
-		return pgUser;
-	}
-
-	public String getPgPass() {
-		return pgPass;
+	public String getMongoDb() {
+		return mongoDb;
 	}
 
 }

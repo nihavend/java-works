@@ -1,0 +1,51 @@
+I have MongoDB objects like this (type=badge):
+
+{
+	"_id": { "$numberLong": "131634" },
+	"audit": {
+		"created": {
+			"date": "2023-01-02T07:07:46.532Z",
+			"user": { "email": "helin.tuncel@trtworld.com", "name": "Helin TUNCEL" }
+		},
+		"modified": { "date": "2025-05-13T17:21:57.736Z" }
+	},
+	"fields": {
+		"display_title": { "text": "New Movie" },
+		"layout": { "value": "New Movie", "key": "new-movie", "metadata": {} }
+	},
+	"id": { "$numberLong": "131634" },
+	"isActive": true,
+	"path": "/131634",
+	"published": {
+		"date": "2025-05-13T17:22:04.235Z",
+		"status": true,
+		"revisionId": { "$numberLong": "2431080" }
+	},
+	"site": "int",
+	"title": "New Movie",
+	"type": "badge",
+	"viewCount": { "$numberLong": "0" },
+	"images": [
+		{ "filename": "poster1.jpg", "title": "Poster", "type": "cover" },
+		{ "filename": "poster2.jpg", "title": "Poster2", "type": "thumbnail" }
+	]
+}
+
+Write me:
+
+1. Full **Postgres DDL SQL scripts** for:
+   - `badges` table (with references to `layouts` and `users`)
+   - `images` table (unique filename)
+   - `badge_images` relation table
+
+2. Full **Java program** that:
+   - Connects to Mongo and Postgres
+   - Reads badges from Mongo (`type=badge`)
+   - Migrates them into Postgres `badges`
+   - Migrates images into `images` table (upsert by filename)
+   - Creates relations in `badge_images`
+   - Logs unmapped fields
+   - Handles missing/null `audit.created.user` and `audit.modified.user`
+   - Provides safe defaults (0 IDs, current timestamp) when data is missing
+
+Always give me the **full working source code and SQL**, not snippets.

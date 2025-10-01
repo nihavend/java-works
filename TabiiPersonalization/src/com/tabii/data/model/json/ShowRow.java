@@ -1,6 +1,6 @@
-package com.tabii.data.model;
+package com.tabii.data.model.json;
 
-import com.tabii.data.model.entities.sub.MetaData;
+import com.tabii.data.model.json.entities.sub.MetaData;
 
 public class ShowRow extends Row {
 

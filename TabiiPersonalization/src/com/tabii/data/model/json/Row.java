@@ -1,10 +1,10 @@
-package com.tabii.data.model;
+package com.tabii.data.model.json;
 
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.tabii.data.model.entities.ShowCard;
+import com.tabii.data.model.json.entities.ShowCard;
 
 
 @JsonTypeInfo(
