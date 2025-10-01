@@ -1,0 +1,45 @@
+{
+	"_id": {
+		"$numberLong": "509779"
+	},
+	"audit": {
+		"created": {
+			"date": "2025-03-24T09:48:01.971Z",
+			"user": {
+				"name": "Mehtap Tüfekçi",
+				"email": "mehtap.tufekci@trt.net.tr"
+			}
+		},
+		"modified": {
+			"date": "2025-05-13T16:19:31.408Z"
+		}
+	},
+	"body": [],
+	"fields": {
+		"display_title": {
+			"text": "TRT Arabi"
+		}
+	},
+	"id": {
+		"$numberLong": "509779"
+	},
+	"isActive": true,
+	"metadata": [],
+	"path": "/509779",
+	"paths": [
+		"/509779"
+	],
+	"published": {
+		"date": "2025-05-13T16:19:37.737Z",
+		"status": true,
+		"revisionId": {
+			"$numberLong": "2417421"
+		}
+	},
+	"site": "int",
+	"title": "TRT Arabi",
+	"type": "genre",
+	"viewCount": {
+		"$numberLong": "0"
+	}
+}

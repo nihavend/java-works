@@ -1,8 +1,26 @@
 badges
-category
 genre
+category
 parental-guide
 age restriction
 exclusive badge
 badge (KULLANILMIYOR)
 
+CREATE TABLE IF NOT EXISTS public.lookup_objects
+(
+    id SERIAL PRIMARY KEY,
+    type TEXT NOT NULL,
+    typeid BIGINT,              -- holds the "id" inside the object  
+	audit JSON,
+    body JSON,
+    fields JSON,
+    isactive BOOLEAN,
+    metadata JSON,
+    path TEXT,
+    paths JSON,
+    published JSON,
+    site TEXT,
+    title TEXT,
+    viewcount BIGINT,
+    audit_user_id BIGINT REFERENCES public.users(id)
+);

@@ -1,0 +1,48 @@
+{
+	"_id": {
+		"$numberLong": "31"
+	},
+	"audit": {
+		"modified": {
+			"date": "2025-05-13T17:59:19.052Z"
+		},
+		"created": {
+			"user": {
+				"email": "muhammedesat.celik@trtworld.com",
+				"name": "Muhammed Esat CELIK"
+			},
+			"date": "2022-12-29T12:44:58.399Z"
+		}
+	},
+	"body": [],
+	"fields": {
+		"display_title": {
+			"text": "Substance Use"
+		},
+		"key": {
+			"text": "substance_use"
+		}
+	},
+	"id": {
+		"$numberLong": "31"
+	},
+	"isActive": true,
+	"metadata": [],
+	"path": "/31",
+	"paths": [
+		"/31"
+	],
+	"published": {
+		"status": true,
+		"revisionId": {
+			"$numberLong": "2436282"
+		},
+		"date": "2025-05-13T17:59:22.619Z"
+	},
+	"site": "int",
+	"title": "Substance Use",
+	"type": "parental-guide",
+	"viewCount": {
+		"$numberLong": "0"
+	}
+}

@@ -1,0 +1,29 @@
+
+
+
+db.lookup.countDocuments({ type: "badges" })
+63
+
+db.lookup.countDocuments({ type: "genre" })
+44
+
+db.lookup.countDocuments({ type: "category" })
+12
+
+db.lookup.countDocuments({ type: "age-restriction" })
+6
+
+db.lookup.countDocuments({ type: "exclusive-badge"" })
+3
+
+db.lookup.countDocuments({ type: "parental-guide" })
+3
+
+(Kullanılmıyor)
+db.lookup.countDocuments({ type: "badge" })
+6
+
+
+db.lookup.find({
+  type: { $nin: ["badges", "genre", "category", "age-restriction", "exclusive-badge", "parental-guide"] }
+})

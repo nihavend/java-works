@@ -1,0 +1,47 @@
+{
+	"_id": {
+		"$numberLong": "131649"
+	},
+	"audit": {
+		"created": {
+			"date": "2023-01-02T07:08:57.462Z",
+			"user": {
+				"email": "helin.tuncel@trtworld.com",
+				"name": "Helin TUNCEL"
+			}
+		},
+		"modified": {
+			"date": "2025-05-13T17:21:57.599Z"
+		}
+	},
+	"body": [],
+	"fields": {
+		"layout": {
+			"value": "Premium",
+			"key": "premium",
+			"metadata": {}
+		}
+	},
+	"id": {
+		"$numberLong": "131649"
+	},
+	"isActive": true,
+	"metadata": [],
+	"path": "/131649",
+	"paths": [
+		"/131649"
+	],
+	"published": {
+		"date": "2025-05-13T17:22:04.089Z",
+		"status": true,
+		"revisionId": {
+			"$numberLong": "2431074"
+		}
+	},
+	"site": "int",
+	"title": "Premium",
+	"type": "exclusive-badge",
+	"viewCount": {
+		"$numberLong": "0"
+	}
+}

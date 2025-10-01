@@ -10,6 +10,7 @@ CREATE TABLE users (
     id SERIAL PRIMARY KEY,
     first_name VARCHAR(100) NOT NULL,
     last_name VARCHAR(100) NOT NULL,
+    email VARCHAR(100) NOT NULL,
     modified_user VARCHAR(100),
     modified_date TIMESTAMP,
 	created_user VARCHAR(100),
@@ -18,11 +19,15 @@ CREATE TABLE users (
 
 
 INSERT INTO users (
-    first_name, last_name, modified_user, modified_date, created_user, created_date
+    first_name, last_name, email, modified_user, modified_date, created_user, created_date
 ) VALUES
-    ('Name', 'Sirname',
+    ('Name', 'Sirname','name.sirname@trt.net.com',
+    'helin.tuncel@trtworld.com', '2025-05-13T18:47:14.904Z',
+    'name.sirname@trt.net.com', '2025-05-13T18:47:14.904Z'),
+    ('Name', 'Sirname','name.sirname@trt.net.com',
     'name.sirname@trt.net.com', '2025-05-13T18:47:14.904Z',
-    'name.sirname@trt.net.com', '2025-05-13T18:47:14.904Z')
+    'name.sirname@trt.net.com', '2025-05-13T18:47:14.904Z'),
+  
 ;
 
 
@@ -65,9 +70,9 @@ CREATE TABLE countries (
     numeric_code CHAR(3) NOT NULL,             -- Numeric code (e.g., 4)
     iso_3166_2 VARCHAR(20),               -- Full ISO 3166-2 code (e.g., 'ISO 3166-2:AF')
     continent_id INT NOT NULL REFERENCES continents(id) ON DELETE CASCADE,   
-    modified_user VARCHAR(100),
+    modified_user INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     modified_date TIMESTAMP,
-    created_user VARCHAR(100),
+    created_user INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     created_date TIMESTAMP DEFAULT now()
 );
 
@@ -83,44 +88,113 @@ nationality         character_name (nullable)
 
 
 CREATE TABLE contributors (
-    id UUID PRIMARY KEY,
+    id SERIAL PRIMARY KEY,
     first_name VARCHAR(100) NOT NULL,
     last_name VARCHAR(100) NOT NULL,
     nationality VARCHAR(100),
     birth_date TIMESTAMP,
     published_date TIMESTAMP,
     published_status VARCHAR(100),
-    created_date TIMESTAMP DEFAULT now(),
+    modified_user INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     modified_date DATE,
-    modified_user VARCHAR(100)
+    created_user INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    created_date TIMESTAMP DEFAULT now()
+);
+
+
+//images table
+
+CREATE TABLE images (
+    id SERIAL PRIMARY KEY,
+    image_type TEXT,
+    filename TEXT UNIQUE,
+    title TEXT
+);
+
+
+// badges
+
+CREATE TABLE layouts (
+    id SERIAL PRIMARY KEY,
+    key VARCHAR(100),
+    value VARCHAR(100),
+    metadata VARCHAR(100)
+);
+
+// ********************************************************************* //
+// Badges
+
+
+
+
+// ********************************************************************* //
+// Category
+
+
+
+
+// ********************************************************************* //
+
+CREATE TABLE genres (
+    id BIGINT PRIMARY KEY,
+    title TEXT,
+    image_id INTEGER REFERENCES images(id)
 );
 
 
 
+// ************************************
+
+CREATE TABLE contents (
+    id BIGINT PRIMARY KEY,
+    title TEXT,
+    description TEXT,
+    spot TEXT,
+    made_year INT,
+    content_type TEXT
+);
+
+-- Content to Image mapping
+CREATE TABLE content_images (
+    content_id BIGINT REFERENCES contents(id),
+    image_id INT REFERENCES images(id),
+    PRIMARY KEY (content_id, image_id)
+);
+
+-- Content to Genre mapping
+CREATE TABLE content_genres (
+    content_id BIGINT REFERENCES contents(id),
+    genre_id BIGINT REFERENCES genres(id),
+    PRIMARY KEY (content_id, genre_id)
+);
+
+-- Content to Badge mapping
+CREATE TABLE content_badges (
+    content_id BIGINT REFERENCES contents(id),
+    badge_id BIGINT REFERENCES badges(id),
+    PRIMARY KEY (content_id, badge_id)
+);
 
 
+// ************************************
 
 
+// Burada kaldım : 
 
+bundan sonra rdb de json oluşturup test edeceğim
+sonrasında bunları redis'e atıp oradan okuyup test edeceğim 
 
 CREATE TABLE contributor_roles (
-    id UUID PRIMARY KEY,
-    contributor_id UUID NOT NULL REFERENCES contributors(id) ON DELETE CASCADE,
-    content_id UUID NOT NULL REFERENCES contents(id) ON DELETE CASCADE,
+    id SERIAL PRIMARY KEY,
+    contributor_id INT NOT NULL REFERENCES contributors(id) ON DELETE CASCADE,
+    content_id INT NOT NULL REFERENCES contents(id) ON DELETE CASCADE,
     role_type VARCHAR(50) NOT NULL, -- örn: 'Actor', 'Director', 'Producer'
     character_name VARCHAR(100) -- sadece oyuncular için
 );
 
 
-
-
-
-
-
-
-
 CREATE TABLE contents (
-    id UUID PRIMARY KEY,
+    id SERIAL PRIMARY KEY,
     title VARCHAR(255) NOT NULL,
     release_year INT,
     genre VARCHAR(100)

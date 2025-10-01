@@ -1,0 +1,46 @@
+{
+	"_id": {
+		"$numberLong": "154832"
+	},
+	"audit": {
+		"created": {
+			"date": "2023-04-05T19:58:40.196Z",
+			"user": {
+				"name": "Hamza ASLAN",
+				"email": "hamza.aslan@trtworld.com"
+			}
+		},
+		"modified": {
+			"date": "2025-05-13T17:21:50.344Z"
+		}
+	},
+	"body": [],
+	"fields": {
+		"key": {
+			"text": "XXUNDEFINEDXX"
+		},
+		"display_title": {
+			"text": "XXUNDEFINEDXX"
+		}
+	},
+	"id": {
+		"$numberLong": "154832"
+	},
+	"isActive": true,
+	"metadata": [],
+	"path": "/154832",
+	"paths": [
+		"/154832"
+	],
+	"published": {
+		"status": true,
+		"revisionId": {
+			"$numberLong": "2431036"
+		},
+		"date": "2025-05-13T17:21:56.912Z"
+	},
+	"site": "int",
+	"title": "UNDEFINED",
+	"type": "age-restriction",
+	"viewCount": {
+		"$numberLong": "0"
