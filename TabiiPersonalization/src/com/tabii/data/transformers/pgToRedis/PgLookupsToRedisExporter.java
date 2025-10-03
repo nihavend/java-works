@@ -10,7 +10,7 @@ import redis.clients.jedis.Jedis;
 
 import java.sql.*;
 
-public class PgToRedisExporterLookups {
+public class PgLookupsToRedisExporter {
 
 
 
@@ -41,6 +41,7 @@ public class PgToRedisExporterLookups {
                     // Redis key = type:id (unchanged)
                     String redisKey = type + ":" + typeid;
                     System.out.println("Redis Key : " + redisKey);
+                        
                     // JSON value (now includes typeid too)
                     JSONObject value = new JSONObject();
                     value.put("id", id);
