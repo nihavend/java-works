@@ -1,0 +1,19 @@
+chatGPT
+
+Related with :/TabiiPersonalization/src/com/tabii/data/transformers/mongoToPg/images_prompt.txt
+
+1. create a new java program, do not modify existing
+2. this code is going to read contents table and than put them in to redis with key show:id and the rest as value 
+3. this is contents table 
+CREATE TABLE public.contents (
+	id int8 NOT NULL,
+	title text NULL,
+	description text NULL,
+	spot text NULL,
+	made_year int4 NULL,
+	content_type text NULL,
+	CONSTRAINT contents_pkey PRIMARY KEY (id)
+);
+4. contents have relations : content_badges(content_id,badge_id), content_genres(content_id,genre_id) and content_images((content_id,image_id))
+5. put the ids of these relational objects into the corresponding arrays in content object
+5. this is sample record show:191180 : {"badges":["182921"],"contentType":"series","description":"Mehmet, a former police chief who has quickly risen through the ranks, has a hidden talent no one knows. As unsolved murder cases pile up, Mehmet is offered a consultancy role with special powers.","exclusiveBadges":[],"favorite":false,"genres":["149704","69"],"images":[],"madeYear":2023,"spot":"Mehmet, who was born with the ability to see and reveal evil, embarks on a journey between good and bad, and goes after serial killers.","title":"The Raven: Deep Darkness"}

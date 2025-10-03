@@ -1,0 +1,40 @@
+1. . create a new java program, do not modify existing 
+2. this code is going to read lookup_objects table where type equals genre  
+3.CREATE TABLE public.lookup_objects (
+	id serial4 NOT NULL,
+	"type" text NOT NULL,
+	typeid int8 NULL,
+	audit json NULL,
+	body json NULL,
+	fields json NULL,
+	isactive bool NULL,
+	metadata json NULL,
+	"path" text NULL,
+	paths json NULL,
+	published json NULL,
+	site text NULL,
+	title text NULL,
+	viewcount int8 NULL,
+	audit_user_id int8 NULL,
+	CONSTRAINT lookup_objects_pkey PRIMARY KEY (id)
+);
+4. and than put them in to redis with key genre:typeid and the rest as value according to this json, never mind about the other fileds does not in json (check all the columns containing json for the  for the keys given  in below json )
+
+5. if background key exists in fields object than contains image data. find the id of the image from images table    using name as filename key and only put the id in images array
+ id integer NOT NULL DEFAULT nextval('images_id_seq'::regclass),
+    image_type text COLLATE pg_catalog."default",
+    filename text COLLATE pg_catalog."default",
+    title text COLLATE pg_catalog."default",
+    CONSTRAINT images_pkey PRIMARY KEY (id),
+    CONSTRAINT images_filename_key UNIQUE (filename)
+6. value :
+{
+                            "contentType": "genre",
+                            "id": 149704,
+                            "images": [
+                                {
+                                    6666
+                                }
+                            ],
+                            "title": "Crime"
+                        }

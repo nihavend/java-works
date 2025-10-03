@@ -1,0 +1,14 @@
+chatGPT
+
+1. write a java program that will query "shows" mongo collection's "fields" 
+object for keys: main_image, main_image_with_logo,cover_image,mobile_cover_image,vertical_image,vertical_image_with_logo,show_logo,promo_image 
+
+2. the mapped to these keys should have fields : type, fileName,url,title 
+
+3. write these fields to pg table which has fields, skip the fields not in table : 
+CREATE TABLE public.images ( id serial4 NOT NULL, image_type text NULL, filename text NULL, title text NULL, CONSTRAINT images_filename_key 
+UNIQUE (filename), CONSTRAINT images_pkey PRIMARY KEY (id) ); 
+
+4. and put the relations in to table according to id of the main show object as content id. this is the relation table 
+CREATE TABLE public.content_images ( content_id int8 NOT NULL, image_id int4 NOT NULL, 
+CONSTRAINT content_images_pkey PRIMARY KEY (content_id, image_id) );

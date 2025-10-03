@@ -1,0 +1,85 @@
+
+
+
+1. . create a new java program, do not modify existing 
+2. this code is going to read lookup_objects table where type equals badges
+  
+3.CREATE TABLE public.lookup_objects (
+	id serial4 NOT NULL,
+	"type" text NOT NULL,
+	typeid int8 NULL,
+	audit json NULL,
+	body json NULL,
+	fields json NULL,
+	isactive bool NULL,
+	metadata json NULL,
+	"path" text NULL,
+	paths json NULL,
+	published json NULL,
+	site text NULL,
+	title text NULL,
+	viewcount int8 NULL,
+	audit_user_id int8 NULL,
+	CONSTRAINT lookup_objects_pkey PRIMARY KEY (id)
+);
+
+
+4. and than put them in to redis with key badges:typeid and the rest as value according to this json, 
+skip the fields does not in json 
+
+
+
+5. This is the value object
+ 
+        {
+            "bannerLocation": "upLogo",
+            "id": 182921,
+            "images": [66666]
+            ],
+            "showLocation": "leftTop",
+            "title": "tabii original series",
+            "type": "icon"
+        }
+
+
+get type from fields.layout.key
+
+use this mapping to :
+
+    locationMapping(key){
+        switch (key) {
+            case 'upper_right_corner':
+                return 'rightTop'
+            case 'upper_left_corner':
+                return 'leftTop'
+            case 'lower_left_corner':
+                return 'leftBottom'
+            case 'on_top_of_the_logo':
+                return 'upLogo'
+            case 'under_the_logo':
+                return 'bottomLogo'
+            case 'do_not_show':
+            default:
+                return 'invisible'
+        }
+    }
+    
+    
+
+get showLocation from  fields.show_card_location.key
+get bannerLocation from  fields.banner_location.key 
+
+
+5. if badge_image key exists in fields object than contains image data. find the id of the image from images table  by using image fileName as foreign key to filename in images table 
+
+only put the id in images array
+ 	
+ 	id integer NOT NULL DEFAULT nextval('images_id_seq'::regclass),
+    image_type text COLLATE pg_catalog."default",
+    filename text COLLATE pg_catalog."default",
+    title text COLLATE pg_catalog."default",
+    CONSTRAINT images_pkey PRIMARY KEY (id),
+    CONSTRAINT images_filename_key UNIQUE (filename)
+
+    
+    

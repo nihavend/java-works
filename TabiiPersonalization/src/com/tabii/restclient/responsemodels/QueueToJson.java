@@ -2,6 +2,7 @@ package com.tabii.restclient.responsemodels;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.math.BigInteger;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -17,7 +18,7 @@ public class QueueToJson {
 	public static void main(String[] args) {
 		// Scanner scanner = new Scanner(System.in);
 		// System.out.print("Enter queue ID: ");
-		String id = "154830_134666";// scanner.nextLine().trim();
+		String id = "1";// scanner.nextLine().trim();
 		
 		String queueKey = "queue:" + id; // Construct queue key as queue:id
 
@@ -42,7 +43,7 @@ public class QueueToJson {
 
 		JsonArray fullData = new JsonArray();
 		for (JsonElement rowIdElem : rowsIds) {
-			String rowId = rowIdElem.getAsString();
+			BigInteger rowId = rowIdElem.getAsBigInteger();
 			String rowKey = "row:" + rowId; // Construct row key as row:<row_id>
 			String rowJsonStr = jedis.get(rowKey);
 			if (rowJsonStr == null) {
@@ -58,7 +59,7 @@ public class QueueToJson {
 			if (showsIds != null) {
 				JsonArray fullShows = new JsonArray();
 				for (JsonElement showIdElem : showsIds) {
-					String showId = showIdElem.getAsString();
+					BigInteger showId = showIdElem.getAsBigInteger();
 					String showKey = "show:" + showId; // Construct show key as show:<show_id>
 					String showJsonStr = jedis.get(showKey);
 					if (showJsonStr == null) {
@@ -70,17 +71,20 @@ public class QueueToJson {
 					showJson.addProperty("id", showId); // Add show ID as "id" field
 
 					// Process badge, genre, and image arrays
-					String[] objectArrayFields = { "badges", "genre", "images" };
+					String[] objectArrayFields = { "badges", "genres", "images" };
 					for (String field : objectArrayFields) {
 						JsonArray objIds = showJson.getAsJsonArray(field);
 						if (objIds != null) {
 							JsonArray fullObjs = new JsonArray();
 							for (JsonElement objIdElem : objIds) {
-								String objId = objIdElem.getAsString();
-								String objKey = field.substring(0, field.length()) + ":" + objId; // e.g.,
-																										// badge:<id>,
-																										// genre:<id>,
-																										// image:<id>
+								BigInteger objId = objIdElem.getAsBigInteger();
+								// String objKey = field.substring(0, field.length()) + ":" + objId;
+								String objKey = field.substring(0, field.length() - 1) + ":" + objId; // e.g.,
+								if(field.substring(0, field.length() - 1).equals("badge")) {
+									objKey = field.substring(0, field.length()) + ":" + objId;
+								}
+								// e.g.,
+								// badge:<id>, genre:<id>, image:<id>
 								String objJsonStr = jedis.get(objKey);
 								if (objJsonStr == null) {
 									System.out.println(field.substring(0, field.length() - 1)
@@ -97,7 +101,7 @@ public class QueueToJson {
 									if (nestedObjIds != null) {
 										JsonArray fullNestedObjs = new JsonArray();
 										for (JsonElement nestedObjIdElem : nestedObjIds) {
-											String nestedObjId = nestedObjIdElem.getAsString();
+											BigInteger nestedObjId = nestedObjIdElem.getAsBigInteger();
 											String nestedObjKey = nestedField.substring(0, nestedField.length() - 1)
 													+ ":" + nestedObjId;
 											String nestedObjJsonStr = jedis.get(nestedObjKey);
@@ -127,7 +131,7 @@ public class QueueToJson {
 					fullShows.add(showJson);
 				}
 				rowJson.remove("shows");
-				rowJson.add("content", fullShows); // Replace "shows" with "content"
+				rowJson.add("contents", fullShows); // Replace "shows" with "content"
 			}
 
 			fullData.add(rowJson);

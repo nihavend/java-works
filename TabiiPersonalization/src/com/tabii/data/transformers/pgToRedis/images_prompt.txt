@@ -1,0 +1,9 @@
+chatGPT
+
+Related with :/TabiiPersonalization/src/com/tabii/data/transformers/mongoToPg/images_prompt.txt
+
+
+1. create a new java program do not modify existing
+2. this code is going to read images table and than put them in to redis with key image:id and the res as value according to sample : 
+
+{"contentType":"image","imageType":"mainWithLogo","name":"35150_0-0-3839-2160.png","title":"DERIN_MOR ENG Main Image","id":10}

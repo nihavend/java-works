@@ -1,0 +1,71 @@
+
+
+// et_sync
+
+	tools.FillImage(document.Fields.MainImage, images, "main", "main_image")
+	tools.FillImage(document.Fields.MainImage, images, "main", "main_image")
+	tools.FillImage(document.Fields.MainImageWithLogo, images, "mainWithLogo", "main_image_with_logo")
+	tools.FillImage(document.Fields.CoverImage, images, "cover", "cover_image")
+	tools.FillImage(document.Fields.MobileCoverImage, images, "mobileCover", "mobile_cover_image")
+	if document.Fields.VerticalImage != nil {
+		tools.FillImage(document.Fields.VerticalImage.VerticalImageObject, images, "vertical", "vertical_image")
+	}
+	tools.FillImage(document.Fields.VerticalImageWithLogo, images, "verticalWithLogo", "vertical_image_with_logo")
+	tools.FillImage(document.Fields.ShowLogo, images, "showLogo", "show_logo")
+	tools.FillImage(document.Fields.PromoterImage, images, "promoterImage", "promo_image")
+
+
+
+
+
+func FillImage(image *mongo.Fields, images map[string]dynamo.Content, imageType string, key string) {
+	if image != nil {
+		images[imageType] = dynamo.Content{
+			ContentType: image.Type.(string),
+			Name:        image.FileName,
+			Title:       image.Title,
+			ImageType:   imageType,
+			Key:         key,
+		}
+	}
+}
+
+
+
+// client json
+
+    {
+        "contentType": "image",
+        "imageType": "showLogo",
+        "name": "35052.png",
+        "title": "KUZGUN_DIPSIZ_KARANLIK ENG Logo"
+    }
+
+
+// mongo json    
+
+    "cover_image": {
+      "url": "https://cms-tabii-public-image.tabii.com/int/49901_0-0-4319-2099.png",
+      "title": "ALMANYADA_RAMAZAN COVER",
+      "type": "image",
+      "fileName": "49901_0-0-4319-2099.png"
+    },                        
+
+
+// pq sql
+
+CREATE TABLE public.images (
+	id serial4 NOT NULL,
+	image_type text NULL,
+	filename text NULL,
+	title text NULL,
+	CONSTRAINT images_filename_key UNIQUE (filename),
+	CONSTRAINT images_pkey PRIMARY KEY (id)
+);    
+
+
+CREATE TABLE public.content_images (
+	content_id int8 NOT NULL,
+	image_id int4 NOT NULL,
+	CONSTRAINT content_images_pkey PRIMARY KEY (content_id, image_id)
+);
