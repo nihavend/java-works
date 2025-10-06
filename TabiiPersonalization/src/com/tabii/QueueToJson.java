@@ -1,4 +1,4 @@
-package com.tabii.restclient.responsemodels;
+package com.tabii;
 
 import java.io.FileWriter;
 import java.io.IOException;

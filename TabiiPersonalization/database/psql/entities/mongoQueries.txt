@@ -27,3 +27,30 @@ db.lookup.countDocuments({ type: "badge" })
 db.lookup.find({
   type: { $nin: ["badges", "genre", "category", "age-restriction", "exclusive-badge", "parental-guide"] }
 })
+
+
+{
+  $where: function() {
+    function containsKeyValue(obj, key, value) {
+      if (typeof obj !== 'object' || obj === null) return false;
+
+      for (let k in obj) {
+        if (k === key && obj[k] === value) {
+          return true;
+        }
+        if (typeof obj[k] === 'object') {
+          if (containsKeyValue(obj[k], key, value)) {
+            return true;
+          }
+        }
+      }
+
+      return false;
+    }
+
+    return containsKeyValue(this, "type", "image");
+  }
+}
+
+
+{ "fields.exclusive_badge": { $exists: true } }

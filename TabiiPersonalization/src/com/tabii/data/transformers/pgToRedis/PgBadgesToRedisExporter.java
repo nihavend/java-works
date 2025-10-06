@@ -13,7 +13,12 @@ import java.sql.*;
 
 public class PgBadgesToRedisExporter {
 
-    public static void main(String[] args) {
+	
+	public static void main(String[] args) {
+		migrate();
+	}
+	
+    public static void migrate() {
     	// PostgreSQL connection settings
     	PgProperties pgProperties = CommonUtils.getPgConnectionProps();
     	

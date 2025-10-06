@@ -1,0 +1,10 @@
+CREATE TABLE IF NOT EXISTS public.content_lookup_relations
+(
+    content_id bigint NOT NULL,
+    lookup_id integer NOT NULL,
+    CONSTRAINT content_lookup_relations_pkey PRIMARY KEY (content_id, lookup_id),
+    CONSTRAINT content_lookup_relations_content_id_fkey FOREIGN KEY (content_id)
+        REFERENCES public.contents (id),
+    CONSTRAINT content_lookup_relations_lookup_id_fkey FOREIGN KEY (lookup_id)
+        REFERENCES public.lookup_objects (id)
+);

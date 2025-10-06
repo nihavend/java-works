@@ -1,9 +1,40 @@
 chatGPT
 
-Related with :/TabiiPersonalization/src/com/tabii/data/transformers/mongoToPg/images_prompt.txt
+
+Create a standalone Java program named ImagesToRedisExporter that does the following:
+
+Connects to a PostgreSQL database using connection properties provided by CommonUtils.getPgConnectionProps() which returns a PgProperties object with getDbUrl(), getDbUser(), and getDbPassword().
+
+Connects to a Redis server using connection properties provided by CommonUtils.getRedisConnectionProps() which returns a RedisProperties object with getHost() and getPort().
+
+Reads all rows from the PostgreSQL table images which has the following structure:
+
+CREATE TABLE IF NOT EXISTS public.images
+(
+    id integer NOT NULL DEFAULT nextval('images_id_seq'::regclass),
+    image_type text,
+    filename text,
+    title text,
+    CONSTRAINT images_pkey PRIMARY KEY (id),
+    CONSTRAINT images_filename_key UNIQUE (filename)
+);
 
 
-1. create a new java program do not modify existing
-2. this code is going to read images table and than put them in to redis with key image:id and the res as value according to sample : 
+For each row, constructs a JSON object with the following fields:
 
-{"contentType":"image","imageType":"mainWithLogo","name":"35150_0-0-3839-2160.png","title":"DERIN_MOR ENG Main Image","id":10}
+{
+  "id": <id>,
+  "contentType": "image",
+  "imageType": <image_type>,
+  "name": <filename>,
+  "title": <title>
+}
+
+
+Writes each JSON object to Redis with the key "image:<id>" and the JSON string as the value.
+
+Prints a log to the console each time a record is stored in Redis.
+
+Uses the org.json.JSONObject library for JSON construction and redis.clients.jedis.Jedis for Redis.
+
+Handles exceptions gracefully and prints stack traces if any errors occur.

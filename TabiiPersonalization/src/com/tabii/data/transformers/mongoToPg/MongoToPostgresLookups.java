@@ -23,6 +23,10 @@ import com.tabii.utils.PgProperties;
 public class MongoToPostgresLookups {
 
 	public static void main(String[] args) {
+		migrate();
+	}
+	
+	public static void migrate() {
 
 		MongoProperties mongoProperties = CommonUtils.getMongoConnectionProps();
 		String mongoCollection = "lookup"; // Mongo collection
