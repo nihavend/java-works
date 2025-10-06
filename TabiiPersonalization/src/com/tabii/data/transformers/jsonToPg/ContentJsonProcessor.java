@@ -28,7 +28,7 @@ public class ContentJsonProcessor {
 
         String jsonFilePath = args[0];
 
-        try (Connection conn = DriverManager.getConnection(pgProperties.getDbUrl(), pgProperties.getDbUrl(), pgProperties.getDbPassword())) {
+        try (Connection conn = DriverManager.getConnection(pgProperties.getDbUrl(), pgProperties.getDbUser(), pgProperties.getDbPassword())) {
             ObjectMapper mapper = new ObjectMapper();
             JsonNode root = mapper.readTree(new File(jsonFilePath));
             findAndInsertContents(root, conn);
