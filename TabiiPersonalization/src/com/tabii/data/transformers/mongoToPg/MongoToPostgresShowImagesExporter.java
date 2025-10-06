@@ -1,11 +1,12 @@
 package com.tabii.data.transformers.mongoToPg;
 
+import static java.util.Map.entry;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.List;
+import java.util.Map;
 
 import org.bson.Document;
 
@@ -16,19 +17,28 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.tabii.utils.CommonUtils;
 import com.tabii.utils.MongoProperties;
-import com.tabii.utils.PgProperties;
+import com.tabii.utils.PgProperties; 
 
 public class MongoToPostgresShowImagesExporter {
 
-
-    // Image keys to extract from Mongo
-    private static final List<String> IMAGE_KEYS = Arrays.asList(
-            "main_image", "main_image_with_logo", "cover_image",
-            "mobile_cover_image", "vertical_image", "vertical_image_with_logo",
-            "show_logo", "promo_image", "badge_image"
-    );
+   
+    public  static final Map<String, String> imageMap = Map.ofEntries(
+    		entry("main_image", "main"),
+    	    entry("main_image_with_logo", "mainWithLogo"),
+    	    entry("cover_image", "cover"),
+    	    entry("mobile_cover_image", "mobileCover"),
+    	    entry("vertical_image", "vertical"),
+    	    entry("vertical_image_with_logo", "verticalWithLogo"),
+    	    entry("show_logo", "showLogo"),
+    	    entry("promo_image", "promoterImage"),
+    	    entry("badge_image", "background")
+    	);
 
     public static void main(String[] args) {
+    	migrate();
+    }
+    
+    public static void migrate() {
     	
     	PgProperties pgProperties = CommonUtils.getPgConnectionProps();
     	MongoProperties mongoProperties = CommonUtils.getMongoConnectionProps();
@@ -50,15 +60,15 @@ public class MongoToPostgresShowImagesExporter {
                     Document fields = doc.get("fields", Document.class);
                     if (fields == null) continue;
 
-                    for (String key : IMAGE_KEYS) {
+                    for (String key : imageMap.keySet()) {
                         Document imageDoc = fields.get(key, Document.class);
                         if (imageDoc != null) {
-                            String type = imageDoc.getString("type");
+                            // String type = imageDoc.getString("type");
                             String fileName = imageDoc.getString("fileName");
                             String title = imageDoc.getString("title");
 
                             if (fileName != null) { // filename is unique, skip nulls
-                                ps.setString(1, type);
+                                ps.setString(1, imageMap.get(key));
                                 ps.setString(2, fileName);
                                 ps.setString(3, title);
                                 ps.addBatch();
@@ -74,4 +84,5 @@ public class MongoToPostgresShowImagesExporter {
             e.printStackTrace();
         }
     }
+    
 }
