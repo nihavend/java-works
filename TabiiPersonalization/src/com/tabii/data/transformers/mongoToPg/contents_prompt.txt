@@ -1,0 +1,104 @@
+chatGPT
+
+
+contents mongo to pg
+1. write a java program that will query mongo "shows"  collection
+2. going to write the contents of show to the pg table contents 
+3. map the show filed to columns of the table which has create script :
+CREATE TABLE IF NOT EXISTS public.contents
+(
+    id bigint NOT NULL,
+    title text COLLATE pg_catalog."default",
+    description text COLLATE pg_catalog."default",
+    spot text COLLATE pg_catalog."default",
+    made_year integer,
+    content_type text COLLATE pg_catalog."default",
+    "exclusiveBadges" json,
+    CONSTRAINT contents_pkey PRIMARY KEY (id)
+)
+4. content data has relation with three tables : content_images, content_genres, content_badges over content_id
+CREATE TABLE IF NOT EXISTS public.content_images
+(
+    content_id bigint NOT NULL,
+    image_id integer NOT NULL,
+    CONSTRAINT content_images_pkey PRIMARY KEY (content_id, image_id),
+    CONSTRAINT content_images_content_id_fkey FOREIGN KEY (content_id)
+        REFERENCES public.contents (id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION,
+    CONSTRAINT content_images_image_id_fkey FOREIGN KEY (image_id)
+        REFERENCES public.images (id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+)
+CREATE TABLE IF NOT EXISTS public.content_genres
+(
+    content_id bigint NOT NULL,
+    genre_id bigint NOT NULL,
+    CONSTRAINT content_genres_pkey PRIMARY KEY (content_id, genre_id),
+    CONSTRAINT content_genres_content_id_fkey FOREIGN KEY (content_id)
+        REFERENCES public.contents (id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+)
+CREATE TABLE IF NOT EXISTS public.content_badges
+(
+    content_id bigint NOT NULL,
+    badge_id bigint NOT NULL,
+    CONSTRAINT content_badges_pkey PRIMARY KEY (content_id, badge_id),
+    CONSTRAINT content_badges_content_id_fkey FOREIGN KEY (content_id)
+        REFERENCES public.contents (id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+)
+5. if show object contains any nested or not child which type is "image" should be mapped to the its id over fileName to filename conection to image table
+CREATE TABLE IF NOT EXISTS public.images
+(
+    id integer NOT NULL DEFAULT nextval('images_id_seq'::regclass),
+    image_type text COLLATE pg_catalog."default",
+    filename text COLLATE pg_catalog."default",
+    title text COLLATE pg_catalog."default",
+    CONSTRAINT images_pkey PRIMARY KEY (id),
+    CONSTRAINT images_filename_key UNIQUE (filename)
+)
+
+6. if show object contains any nested or not child which type is any of  
+"parental-guide"
+"age-restriction"
+"category"
+"exclusive-badge"
+"badge"
+"genre"
+"badges" 
+
+these should be mapped to the their id's in lookup_objects table 
+
+you can find related records with their ids in mongo to typeid in pg. - also need create scipt of relation table between lookup_objects and contents table
+
+CREATE TABLE IF NOT EXISTS public.lookup_objects
+(
+    id integer NOT NULL DEFAULT nextval('lookup_objects_id_seq'::regclass),
+    type text COLLATE pg_catalog."default" NOT NULL,
+    typeid bigint,
+    audit json,
+    body json,
+    fields json,
+    isactive boolean,
+    metadata json,
+    path text COLLATE pg_catalog."default",
+    paths json,
+    published json,
+    site text COLLATE pg_catalog."default",
+    title text COLLATE pg_catalog."default",
+    viewcount bigint,
+    audit_user_id bigint,
+    CONSTRAINT lookup_objects_pkey PRIMARY KEY (id),
+    CONSTRAINT lookup_objects_audit_user_id_fkey FOREIGN KEY (audit_user_id)
+        REFERENCES public.users (id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+)
+
+7. if mapped records does not exists in their relation tables than log it on go on
+
+
