@@ -42,7 +42,7 @@ public class MongoToPostgresLookups {
 
 			// Prepare insert statement
 			String insertSQL = "INSERT INTO lookup_objects "
-					+ "(type, typeId, audit, body, fields, isactive, metadata, path, paths, published, site, title, viewcount, audit_user_id) "
+					+ "(id, type, audit, body, fields, isactive, metadata, path, paths, published, site, title, viewcount, audit_user_id) "
 					+ "VALUES (?, ?, ?::jsonb, ?::jsonb, ?::jsonb, ?, ?::jsonb, ?, ?::jsonb, ?::jsonb, ?, ?, ?, ?)";
 
 			PreparedStatement stmt = pgConn.prepareStatement(insertSQL);
@@ -55,8 +55,8 @@ public class MongoToPostgresLookups {
 				
 				Object typeId =  flat.get("id");
 				
-				stmt.setString(1, type);
-				stmt.setObject(2, typeId, Types.BIGINT);
+				stmt.setObject(1, typeId, Types.BIGINT);
+				stmt.setString(2, type);
 				stmt.setString(3, asJson(flat.get("audit")));
 				stmt.setString(4, asJson(flat.get("body")));
 				stmt.setString(5, asJson(flat.get("fields")));
