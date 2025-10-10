@@ -1,0 +1,63 @@
+Write a complete Java program named MongoToPostgresContentExporter that migrates data from MongoDB collection "shows" to PostgreSQL table "contents" and its related tables.
+
+Requirements:
+
+1. Connect to MongoDB (URI, database, collection) and PostgreSQL (JDBC URL, user, password) using configuration properties.
+
+2. PostgreSQL schema:
+   - contents(id bigint primary key, title text, description text, spot text, made_year integer, content_type text, exclusiveadges json)
+   - content_images(content_id bigint, image_id integer)
+   - content_genres(content_id bigint, genre_id bigint)
+   - content_badges(content_id bigint, badge_id bigint)
+   - images(id integer primary key, filename text unique)
+   - lookup_objects(id integer primary key, type text, typeid bigint)
+   - content_lookup_relations(content_id bigint, lookup_id integer)
+
+3. Query all documents from the MongoDB "shows" collection.
+
+4. For each show document:
+
+   a) Extract standard fields:
+      - id (_id), title, description, contentType, and nested fields inside "fields" (spot, made_year, etc.).
+      - "made_year" or other numeric fields may use Mongo Extended JSON like:
+        { "number": { "$numberLong": "2022" } }
+        Handle this safely and return Integer or Long.
+      - Use helper functions to extract typed values safely.
+
+   b) Handle `exclusive_badge` array under "fields":
+      - Transform to "exclusiveBadges" JSON column in PostgreSQL as:
+        { "exclusiveBadgeType": "originals" }
+      - If missing, insert empty array "[]".
+
+   c) Handle images:
+      - Any nested document with `"type": "image"` (in fields or subfields)
+        should map via filename to `images.filename`.
+      - Insert `(content_id, image_id)` into `content_images` table.
+      - Log missing images with their full JSON path.
+
+   d) Handle lookup relations:
+      - All lookup-related arrays (`genre`, `badges`, `exclusive_badge`, `parental-guide`, `age-restriction`, `category`) are members of the `fields` object.
+      - For each item in these arrays, read `contentId.$numberLong` and use it to find `lookup_objects.typeid` in PostgreSQL.
+      - Insert `(content_id, lookup_id)` into corresponding relation table:
+          • `genre` → `content_genres`
+          • `badges` → `content_badges`
+          • others → `content_lookup_relations`
+      - If related lookup record is missing, log a warning with full JSON path.
+
+5. Use helper functions:
+   - `getFieldValue(Document doc, String key, Class<?> type)`: safely returns value for any type (String, Integer, Long, Document → JSON).
+   - `getLongFromDocument(Document doc, String key)`: parses nested `$numberLong` fields.
+   - `transformExclusiveBadges(Object exclusiveBadgeObj)`: converts Mongo’s `exclusive_badge` array to simplified `exclusiveBadges` JSON array.
+   - `flattenWithPaths(Document doc, String path)`: recursively traverses documents and logs full path for missing references.
+   - `insertRelation(Connection conn, String table, String col1, String col2, Long id1, Long id2)`: inserts relation safely.
+
+6. Use PreparedStatements for all PostgreSQL inserts and handle null values correctly.
+
+7. Catch all exceptions and log warnings without stopping the export process.
+
+8. Make the code compile-ready for Java 17+ and MongoDB Driver 4.11+.
+
+9. Include structured logging that shows:
+   - Missing image mappings
+   - Missing lookup relations
+   - Any unexpected field structure (with JSON path)

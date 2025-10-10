@@ -1,0 +1,57 @@
+Write a complete Java class named ContentFetcher that:
+
+1. Uses:
+    import com.tabii.utils.CommonUtils;
+    import com.tabii.utils.PgProperties;
+
+   PgProperties pgProperties = CommonUtils.getPgConnectionProps();
+
+   and connects to PostgreSQL with:
+   try (Connection conn = DriverManager.getConnection(pgProperties.getDbUrl(), pgProperties.getDbUser(), pgProperties.getDbPassword()))
+
+2. Selects from the `contents` table:
+       id, made_year, spot, title, exclusive_badges, description, content_type
+
+3. For each content record, also fetches related data from:
+
+   - **content_images**
+       - content_id → contents.id
+       - image_id → images.id
+       - Collect image IDs in an array named `images`.
+
+   - **content_lookup_relations**
+       - content_id → contents.id
+       - lookup_object_id → lookup_objects.id
+       - Join with `lookup_objects` table to read its `type` column.
+       - If `type = 'badges'`, add the lookup_object_id to a `badges` array.
+       - If `type = 'genre'`, add the lookup_object_id to a `genres` array.
+
+4. Prints to screen for each record:
+       id
+       images (array)
+       made_year
+       spot
+       title
+       exclusive_badges
+       description
+       content_type
+       badges (array)
+       genres (array)
+       favorite (always false)
+
+5. Output format should look like a JSON object per content, for example:
+   {
+     "id": 131644,
+     "images": [1, 2, 3],
+     "made_year": 2023,
+     "spot": "Some text",
+     "title": "Show title",
+     "exclusive_badges": "[{\"exclusiveBadgeType\":\"originals\"}]",
+     "description": "Description here",
+     "content_type": "series",
+     "badges": [5, 6],
+     "genres": [12],
+     "favorite": false
+   }
+
+Make sure to escape quotes in text fields and separate each content record with a line of dashes.

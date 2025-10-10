@@ -1,0 +1,41 @@
+
+- write me java code named ContentFetcher 
+
+- use this 
+
+		import com.tabii.utils.CommonUtils;
+		import com.tabii.utils.PgProperties;
+
+    	PgProperties pgProperties = CommonUtils.getPgConnectionProps();
+
+        try (Connection conn = DriverManager.getConnection(pgProperties.getDbUrl(), pgProperties.getDbUser(), pgProperties.getDbPassword())) {
+            String contentQuery = "SELECT id, made_year, spot, title, exclusive_badges, description, content_type FROM contents";
+            Statement stmt = conn.createStatement();
+            ResultSet contentRs = stmt.executeQuery(contentQuery);
+
+- that get 
+	contents from contents db and related record from 
+	content_lookup_relations and content_images relations: 
+	
+		content_lookup_relations content_id to contents table id 
+		lookup_object_id lookup_objects table id from contents
+	
+	content_images:
+	 content_id to contents id
+	 image_id to images id
+	
+	get the below columns and print to screen: 
+		id 
+		images array with id of images from content_images 
+		made_year 
+		spot 
+		title 
+		exclusive_badges 
+		description 
+		content_type 
+		badges array of ids of badges from lookup_objects 
+		genres array of ids of genres from lookup_objects
+
+- add favorite as default false 
+		
+

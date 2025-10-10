@@ -1,0 +1,102 @@
+- name of java file LookupObjectsToRedisExporter
+- use below helpers for connection properties	
+
+import com.tabii.utils.CommonUtils;
+import com.tabii.utils.PgProperties;
+import com.tabii.utils.RedisProperties;
+// PostgreSQL connection settings
+PgProperties pgProperties = CommonUtils.getPgConnectionProps();
+
+// Redis connection settings
+RedisProperties redisProperties = CommonUtils.getRedisConnectionProps();
+
+- read a pg table named lookup_objects 
+id integer NOT NULL DEFAULT nextval('lookup_objects_id_seq'::regclass),
+    type text COLLATE pg_catalog."default" NOT NULL,
+    typeid bigint,
+    audit json,
+    body json,
+    fields json,
+    isactive boolean,
+    metadata json,
+    path text COLLATE pg_catalog."default",
+    paths json,
+    published json,
+    site text COLLATE pg_catalog."default",
+    title text COLLATE pg_catalog."default",
+    viewcount bigint,
+    audit_user_id bigint,
+    CONSTRAINT lookup_objects_pkey PRIMARY KEY (id),
+    CONSTRAINT lookup_objects_audit_user_id_fkey FOREIGN KEY (audit_user_id)
+        REFERENCES public.users (id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+
+- transform the data according to type
+- write each type to corresponding redis key as type:typeid 
+- for exclusive-badge in field column : use this schema for destination redis value 
+                    "exclusiveBadges": [
+                        {
+                            "exclusiveBadgeType": "originals"
+                        }
+                    ],
+- for badges in field column : use this schema for destination redis value : 
+                    "badges": [
+                        {
+                            "bannerLocation": "upLogo",
+                            "id": 182921,
+                            "images": [
+                                {
+                                    "contentType": "image",
+                                    "imageType": "background",
+                                    "name": "26087_0-0-144-144.jpeg",
+                                    "title": "Tabii Original Badges"
+                                }
+                            ],
+                            "showLocation": "leftTop",
+                            "title": "tabii original series",
+                            "type": "icon"
+                        }
+                    ],
+but replace image object in images array with an id of images, at the and the array of images  will be represented.  you will get the ids from images table. use name is key to get id from images table
+(
+    id integer NOT NULL DEFAULT nextval('images_id_seq'::regclass),
+    image_type text COLLATE pg_catalog."default",
+    filename text COLLATE pg_catalog."default",
+    title text COLLATE pg_catalog."default",
+    url text COLLATE pg_catalog."default",
+    CONSTRAINT images_pkey PRIMARY KEY (id),
+    CONSTRAINT images_filename_key UNIQUE (filename)
+)
+
+- for genres in field column : use this schema for destination redis value :
+				"genres": [
+                        {
+                            "contentType": "genre",
+                            "id": 149704,
+                            "images": [
+                                {
+                                    "contentType": "image",
+                                    "imageType": "background",
+                                    "name": "22156_0-0-3840-2400.jpeg",
+                                    "title": "crime_genre"
+                                }
+                            ],
+                            "title": "Crime"
+                        },
+                        {
+                            "contentType": "genre",
+                            "id": 69,
+                            "images": [
+                                {
+                                    "contentType": "image",
+                                    "imageType": "background",
+                                    "name": "22145_0-0-3840-2400.jpeg",
+                                    "title": "drama_genre"
+                                }
+                            ],
+                            "title": "Drama"
+                        }
+                    ], 
+                    
+   but replace image object in images array with an id of images, at the and the array of images  will be represented.  you will get the ids from images table. use name is key to get id from images table
