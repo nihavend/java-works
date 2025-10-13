@@ -91,4 +91,27 @@ e.g :
    
       
    
-   - do not filter isActive
+- do not filter isActive
+
+- change value of show_card_location according to below mapping function before transforming to showLocation
+
+- change value of banner_location according to below mapping function before transforming to bannerLocation
+
+- mapping function :
+      private static String mapLocation(String key) {
+        switch (key) {
+            case "upper_right_corner":
+                return "rightTop";
+            case "upper_left_corner":
+                return "leftTop";
+            case "lower_left_corner":
+                return "leftBottom";
+            case "on_top_of_the_logo":
+                return "upLogo";
+            case "under_the_logo":
+                return "bottomLogo";
+            case "do_not_show":
+            default:
+                return "invisible";
+        }
+    }
