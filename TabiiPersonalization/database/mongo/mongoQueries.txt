@@ -54,3 +54,7 @@ db.lookup.find({
 
 
 { "fields.exclusive_badge": { $exists: true } }
+
+{type: { $nin: ["badges", "genre", "category", "age-restriction", "exclusive-badge", "parental-guide"] }}
+
+{type: { $nin: ["exclusive-badge"] }}

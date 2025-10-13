@@ -22,11 +22,11 @@ INSERT INTO users (
     first_name, last_name, email, modified_user, modified_date, created_user, created_date
 ) VALUES
     ('Name', 'Sirname','name.sirname@trt.net.com',
-    'helin.tuncel@trtworld.com', '2025-05-13T18:47:14.904Z',
-    'name.sirname@trt.net.com', '2025-05-13T18:47:14.904Z'),
-    ('Name', 'Sirname','name.sirname@trt.net.com',
     'name.sirname@trt.net.com', '2025-05-13T18:47:14.904Z',
     'name.sirname@trt.net.com', '2025-05-13T18:47:14.904Z'),
+    ('Name', 'Sirname','name.sirname@trt.net.com',
+    'helin.tuncel@trtworld.com', '2025-05-13T18:47:14.904Z',
+    'name.sirname@trt.net.com', '2025-05-13T18:47:14.904Z')
   
 ;
 
@@ -145,21 +145,6 @@ CREATE TABLE genres (
 
 // ************************************
 
-CREATE TABLE contents (
-    id BIGINT PRIMARY KEY,
-    title TEXT,
-    description TEXT,
-    spot TEXT,
-    made_year INT,
-    content_type TEXT
-);
-
--- Content to Image mapping
-CREATE TABLE content_images (
-    content_id BIGINT REFERENCES contents(id),
-    image_id INT REFERENCES images(id),
-    PRIMARY KEY (content_id, image_id)
-);
 
 -- Content to Genre mapping
 CREATE TABLE content_genres (
