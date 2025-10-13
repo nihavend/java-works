@@ -1,4 +1,4 @@
-package com.tabii.data.transformers.pgToRedis;
+package old;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -38,7 +38,7 @@ public class LookupObjectsToRedis {
                     case "badges":
                         redisValue = transformBadges(rs);
                         break;
-                    case "genres":
+                    case "genre":
                         redisValue = transformGenres(rs);
                         break;
                     default:

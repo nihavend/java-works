@@ -1,4 +1,4 @@
-package com.tabii.data.transformers.mongoToPg;
+package old;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -13,6 +13,8 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 import org.bson.Document;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoClient;
@@ -23,14 +25,14 @@ import com.tabii.utils.CommonUtils;
 import com.tabii.utils.MongoProperties;
 import com.tabii.utils.PgProperties;
 
-public class MongoToPostgresContentExporter {
+public class MongoToPostgresContentExporter_eski {
 
 	private static final Logger logger = Logger.getLogger("MongoToPostgresContentExporter");
 
 	public static void main(String[] args) throws Exception {
 		migrate();
 	}
-	
+
 	public static void migrate() throws Exception {
 
 		MongoProperties mongoProperties = CommonUtils.getMongoConnectionProps();
@@ -60,13 +62,16 @@ public class MongoToPostgresContentExporter {
 		try {
 
 			Long id = show.getLong("_id");
+			
+//			if(id.longValue() != 191180) {
+//				return;
+//			}
+			
 			String contentType = show.getString("type");
 			String title = show.getString("title");
 			String spot = null;
 			Integer madeYear = null;
 			String description = null;
-			// exclusiveBadges is now inside 'fields' and optional
-			Object exclusiveBadges = null;
 			Document fields = show.get("fields", Document.class);
 			if (fields != null) {
 
@@ -77,21 +82,14 @@ public class MongoToPostgresContentExporter {
 				madeYear = madeYearLong != null ? madeYearLong.intValue() : null;
 
 				description = (String) getFieldValue(fields, "long_description", String.class);
-				
-				// Get exclusive_badge from fields (optional)
-				Object exclusiveBadgeObj = fields != null ? fields.get("exclusive_badge") : null;
-
-				// Transform to simplified array
-				List<Document> exclusiveBadgesList = transformExclusiveBadges(exclusiveBadgeObj);
-
-				// Convert to JSON string for PostgreSQL column
-				exclusiveBadges = exclusiveBadgesList.isEmpty() ? "[]" : exclusiveBadgesList.toString();
 			}
 
+			JSONObject exclusiveBadgesJson = extractExclusiveBadges(show);
+			
 			// Insert into contents
 			String insertContent = """
-					INSERT INTO contents (id, title, description, spot, made_year, content_type, "exclusiveBadges")
-					VALUES (?, ?, ?, ?, ?, ?, to_json(?::text))
+					INSERT INTO contents (id, title, description, spot, made_year, content_type, "exclusive_badges")
+					VALUES (?, ?, ?, ?, ?, ?, to_json(?::jsonb))
 					ON CONFLICT (id) DO NOTHING
 					""";
 			try (PreparedStatement ps = pgConn.prepareStatement(insertContent)) {
@@ -104,7 +102,7 @@ public class MongoToPostgresContentExporter {
 				else
 					ps.setNull(5, Types.INTEGER);
 				ps.setString(6, contentType);
-				ps.setString(7, exclusiveBadges != null ? exclusiveBadges.toString() : "{}");
+				ps.setString(7, exclusiveBadgesJson.toString());
 				ps.executeUpdate();
 			}
 
@@ -148,6 +146,7 @@ public class MongoToPostgresContentExporter {
 
 		for (PathNode node : allDocs) {
 			Document doc = node.doc;
+			System.out.println(doc.get("fields"));
 			String type = doc.getString("type");
 			if (type == null || !lookupTypes.contains(type))
 				continue;
@@ -253,18 +252,29 @@ public class MongoToPostgresContentExporter {
 	private static Object getFieldValue(Document doc, String key, Class<?> type) {
 		if (doc == null)
 			return null;
+
 		Object value = doc.get(key);
 		if (value == null)
 			return null;
 
+		// Handle String extraction
 		if (type == String.class) {
 			if (value instanceof String s)
 				return s;
-			if (value instanceof Document d)
+
+			// If it's a nested Document, try to get "text" key
+			if (value instanceof Document d) {
+				Object inner = d.get("text");
+				if (inner instanceof String innerText)
+					return innerText;
+				// fallback to JSON if no "text" field found
 				return d.toJson();
+			}
+
 			return value.toString(); // fallback
 		}
 
+		// Handle Integer
 		if (type == Integer.class) {
 			if (value instanceof Integer i)
 				return i;
@@ -273,6 +283,7 @@ public class MongoToPostgresContentExporter {
 			return null;
 		}
 
+		// Handle Long
 		if (type == Long.class) {
 			if (value instanceof Long l)
 				return l;
@@ -281,13 +292,15 @@ public class MongoToPostgresContentExporter {
 			return null;
 		}
 
+		// Handle Boolean
 		if (type == Boolean.class) {
 			if (value instanceof Boolean b)
 				return b;
 			return null;
 		}
 
-		return value; // fallback for JSON objects, lists, etc.
+		// Fallback for JSON objects, lists, etc.
+		return value;
 	}
 
 	private static Long getLongFromDocument(Document doc, String key) {
@@ -322,23 +335,37 @@ public class MongoToPostgresContentExporter {
 		return null;
 	}
 
-	private static List<Document> transformExclusiveBadges(Object exclusiveBadgeObj) {
-		List<Document> result = new ArrayList<>();
+    private static JSONObject extractExclusiveBadges(Document doc) {
+        try {
+            Document fields = doc.get("fields", Document.class);
 
-		if (exclusiveBadgeObj instanceof List<?> list) {
-			for (Object item : list) {
-				if (item instanceof Document doc) {
-					String title = doc.getString("title");
-					if (title != null) {
-						Document badge = new Document();
-						badge.append("exclusiveBadgeType", title.toLowerCase());
-						result.add(badge);
-					}
-				}
-			}
-		}
+            if (fields != null && fields.containsKey("exclusive_badge")) {
+                @SuppressWarnings("unchecked")
+				List<Document> badgeList = (List<Document>) fields.get("exclusive_badge");
+                JSONArray resultArray = new JSONArray();
 
-		return result;
-	}
+                for (Document badge : badgeList) {
+                    String title = badge.getString("title");
+                    if (title != null) {
+                        JSONObject badgeObj = new JSONObject();
+                        badgeObj.put("exclusiveBadgeType", title.toLowerCase());
+                        resultArray.put(badgeObj);
+                    }
+                }
+
+                JSONObject result = new JSONObject();
+                result.put("exclusiveBadges", resultArray);
+                return result;
+            }
+
+        } catch (Exception e) {
+            // ignore and fallback to empty
+        }
+
+        // if field missing, return empty array
+        JSONObject result = new JSONObject();
+        result.put("exclusiveBadges", new JSONArray());
+        return result;
+    }
 
 }

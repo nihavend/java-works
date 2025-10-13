@@ -1,4 +1,4 @@
-package com.tabii;
+package old;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -13,7 +13,7 @@ import com.google.gson.JsonParser;
 
 import redis.clients.jedis.Jedis;
 
-public class QueueToJson {
+public class QueueToJsonOld {
 	@SuppressWarnings("resource")
 	public static void main(String[] args) {
 		// Scanner scanner = new Scanner(System.in);
