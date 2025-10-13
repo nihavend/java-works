@@ -122,7 +122,21 @@ public class QueueToJson {
 						String genreJson = jedis.get(genreKey);
 						if (genreJson != null) {
 							ObjectNode genreNode = (ObjectNode) mapper.readTree(genreJson);
-							genresData.add(genreNode); // Directly add genre object
+							// Process badge images
+							ArrayNode genreImagesArray = genreNode.has("images") ? (ArrayNode) genreNode.get("images")
+									: mapper.createArrayNode();
+							ArrayNode genreImagesData = mapper.createArrayNode();
+							for (int m = 0; m < genreImagesArray.size(); m++) {
+								String genreImageId = genreImagesArray.get(m).asText();
+								String genreImageKey = "image:" + genreImageId;
+								String genreImageJson = jedis.get(genreImageKey);
+								if (genreImageJson != null) {
+									ObjectNode badgeImageNode = (ObjectNode) mapper.readTree(genreImageJson);
+									genreImagesData.add(badgeImageNode);
+								}
+							}
+							genreNode.set("images", genreImagesData);
+							genresData.add(genreNode); // Directly add badge object
 						}
 					}
 					showData.set("genres", genresData);
