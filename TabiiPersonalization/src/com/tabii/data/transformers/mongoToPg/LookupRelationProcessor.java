@@ -25,7 +25,7 @@ public class LookupRelationProcessor {
             logger.severe("Show document does not contain 'fields'");
             return;
         }
-
+        
         Document fields = (Document) show.get("fields");
 
         for (String node : NODE_NAMES) {
@@ -38,7 +38,11 @@ public class LookupRelationProcessor {
             if (nodeValue instanceof List) {
                 List<Document> items = (List<Document>) nodeValue;
                 for (Document item : items) {
-                    processNodeItem(item, contentId, lookupType, pgConn);
+                	Long lookupObjectId = item.getLong("contentId");
+                    if(lookupObjectId==47) {
+                    	System.out.println();
+                    }
+                	processNodeItem(item, contentId, lookupType, pgConn);
                 }
             } else if (nodeValue instanceof Document) {
                 processNodeItem((Document) nodeValue, contentId, lookupType, pgConn);
@@ -54,11 +58,11 @@ public class LookupRelationProcessor {
             logger.severe("Node item missing contentId for relationType: " + relationType);
             System.exit(1);
         }
-
         // Verify lookup object exists
         if (!lookupObjectExists(lookupObjectId, relationType, pgConn)) {
-            logger.severe("Lookup object not found: id=" + lookupObjectId + ", type=" + relationType);
-            System.exit(1);
+            logger.warning("Content id of show=" + contentId + " Lookup id=" + lookupObjectId + ", type=" + relationType);
+            // System.exit(1);
+            return;
         }
 
         // Insert relation
