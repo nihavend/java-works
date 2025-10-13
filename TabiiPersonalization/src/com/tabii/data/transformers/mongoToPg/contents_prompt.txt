@@ -1,53 +1,108 @@
-Write a complete Java program named MongoToPostgresContentExporter that migrates data from a MongoDB collection "shows" to PostgreSQL table "contents" with related tables. 
+Write a complete Java program named MongoToPostgresContentExporter that migrates data from MongoDB collection "shows" to PostgreSQL table "contents" and its related tables.
 
 Requirements:
 
-1. Connect to MongoDB (URI, database, collection) and PostgreSQL (JDBC URL, user, password) using simple properties classes.
+-	use the below helpers
+ 
+	import com.tabii.utils.CommonUtils;
+	import com.tabii.utils.MongoProperties;
+	import com.tabii.utils.PgProperties;
+
+        MongoProperties mongoProperties = CommonUtils.getMongoConnectionProps();
+        String mongoUri = mongoProperties.getMongoUri();
+        String mongoDb = mongoProperties.getMongoDb();
+        String mongoCollection = "shows"; // props.getProperty("mongo.collection", "shows");
+
+        PgProperties pgProperties = CommonUtils.getPgConnectionProps();
+        String pgUrl = pgProperties.getDbUrl();
+        String pgUser = pgProperties.getDbUser();
+        String pgPassword = pgProperties.getDbPassword();
+
+
+1. Connect to MongoDB (URI, database, collection) and PostgreSQL (JDBC URL, user, password) using configuration properties.
 
 2. PostgreSQL schema:
-   - contents(id bigint primary key, title text, description text, spot text, made_year integer, content_type text, exclusiveBadges json)
-   - content_images(content_id bigint, image_id integer)
-   - content_genres(content_id bigint, genre_id bigint)
-   - content_badges(content_id bigint, badge_id bigint)
-   - images(id integer primary key, filename text unique)
-   - lookup_objects(id integer primary key, type text, typeid bigint)
-   - content_lookup_relations(content_id bigint, lookup_id integer)
+	-   contents
+	    id BIGINT PRIMARY KEY,
+	    title TEXT,
+	    description TEXT,
+	    spot TEXT,
+	    made_year INTEGER,
+	    content_type TEXT,
+	    exclusive_badges JSONB,                -- now JSONB for better performance
+	    created_at TIMESTAMPTZ DEFAULT NOW(),
+	    updated_at TIMESTAMPTZ DEFAULT NOW()
+   
+   -    content_images
+	    content_id BIGINT REFERENCES contents(id),
+    	image_id INT REFERENCES images(id),
+    	PRIMARY KEY (content_id, image_id)	
 
-3. Read documents from MongoDB "shows" collection.
+   -    images
+    id SERIAL PRIMARY KEY,
+    image_type TEXT,
+    filename TEXT UNIQUE,
+    title TEXT,
+    url TEXT
+	    
+   - 	lookup_objects
+    id BIGINT PRIMARY KEY,
+    type TEXT NOT NULL NOT NULL,        -- e.g. genre, badge, category
+    audit JSON,
+    body JSON,
+    fields JSON,
+    isactive BOOLEAN,
+    metadata JSON,
+    path TEXT,
+    paths JSON,
+    published JSON,
+    site TEXT,
+    title TEXT,
+    viewcount BIGINT,
+    audit_user_id BIGINT,
+    CONSTRAINT lookup_objects_audit_user_id_fkey FOREIGN KEY (audit_user_id)
+        REFERENCES public.users (id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+   		
+   - 	content_lookup_relations
+    id BIGSERIAL PRIMARY KEY,
+    content_id BIGINT NOT NULL REFERENCES public.contents (id) ON DELETE CASCADE,
+    lookup_object_id BIGINT NOT NULL REFERENCES public.lookup_objects (id) ON DELETE CASCADE,
+    relation_type TEXT NOT NULL,     -- e.g. "genre", "badge", "category"
+    created_at TIMESTAMPTZ DEFAULT NOW()
 
-4. Handle the following for each show document:
 
-   a) Optional fields inside "fields" object: 
-      - "spot", "made_year", "language", "rating" etc.
-      - "made_year" and other numbers may be nested with "$numberLong" (MongoDB Extended JSON).
-      - Use a helper function to safely extract String, Integer, Long, or nested Document values.
+3. Query all documents from the MongoDB "shows" collection.
 
-   b) exclusive_badge (array inside fields) must be transformed to "exclusiveBadges" column in contents:
-      - Each item: {"title": "Originals", ...} → {"exclusiveBadgeType": "originals"} (lowercase title)
-      - If missing, store empty array "[]".
+4. For each show document:
 
-   c) Images: any nested object with type="image" must map via filename to images table.
-      - Insert relation into content_images table (content_id, image_id)
-      - Log missing images with full path in document.
+   a) Extract standard fields:
+   	  id
+      contentType from type 
+      description from long_description in "fields" object
+      favorite
+      madeYear from "fields" object
+      spot  as text from "fields" object
+      title as text from "fields" object
 
-   d) Lookup relations: any nested object with type in ["parental-guide","age-restriction","category","exclusive-badge","badge","genre","badges"]:
-      - Map type → lookup_objects.typeid
-      - Insert into correct relation table (content_genres, content_badges, or content_lookup_relations)
-      - Log missing lookup objects with full path.
+   b) Handle `exclusive_badge` array under "fields":
+      - Transform to exclusive_badges JSON column in PostgreSQL as:
+        { "exclusiveBadgeType": "originals" }
+      - If missing, insert empty array "[]".
 
-5. All nested structures must be flattened recursively, and logging must include the JSON path for missing relations or images.
+   c) Handle images:
+      - Any nested document with `"type": "image"` (in fields or subfields)
+        should map via filename to `images.filename`.
+      - Insert `(content_id, image_id)` into `content_images` table.
+      - Log missing images with their full JSON path.
 
-6. Use PreparedStatements for all SQL inserts and handle nulls safely.
+   d) Handle lookup relations:
+      - All lookup-related arrays (`genre`, `badges`, `exclusive_badge`, `parental-guide`, `age-restriction`, `category`) are members of the `fields` object.
+      - For each item in these arrays, read `contentId.$numberLong` and use it to find `lookup_objects.typeid` in PostgreSQL.
+      - Insert `(content_id, lookup_id)` into  `content_lookup_relations`
+      - If related lookup record is missing, log a warning with full JSON path. relation_type column shuld be the type of object like badges
 
-7. Implement helper functions:
-   - getFieldValue(Document doc, String key, Class<?> type): returns value as String, Integer, Long, or nested Document JSON safely.
-   - transformExclusiveBadges(Object exclusiveBadgeObj): converts Mongo exclusive_badge array to simplified JSON array.
-   - getLongFromDocument(Document doc, String key): parses nested "$numberLong" fields.
-   - flattenWithPaths(Document doc, String path): recursively flattens document and tracks JSON path.
-   - insertRelation(Connection pgConn, String table, String col1, String col2, Long id1, Long id2)
 
-8. Catch exceptions, log warnings, and continue processing remaining documents.
 
-9. Make the program compile-ready for Java 17+ and MongoDB Driver 4.11+.
 
-10. Keep code clean, modular, and maintainable.
