@@ -31,7 +31,9 @@ public class MongoToPostgresShowLookupImagesExporter {
     	    entry("vertical_image_with_logo", "verticalWithLogo"),
     	    entry("show_logo", "showLogo"),
     	    entry("promo_image", "promoterImage"),
-    	    entry("badge_image", "background")
+    	    entry("badge_image", "background"),
+    	    entry("background", "background")
+    	    
     	);
 
     public static void main(String[] args) {
@@ -65,9 +67,9 @@ public class MongoToPostgresShowLookupImagesExporter {
                     Document fields = doc.get("fields", Document.class);
                     if (fields == null) continue;
 
-                    if(fields.toJson().toString().contains("26087_0-0-144-144.jpeg")) {
-                    	System.out.println("Bingo....");
-                    }
+//                    if(fields.toJson().toString().contains("26087_0-0-144-144.jpeg")) {
+//                    	System.out.println("Bingo....");
+//                    }
                     
                     for (String key : imageMap.keySet()) {
                         Document imageDoc = fields.get(key, Document.class);
