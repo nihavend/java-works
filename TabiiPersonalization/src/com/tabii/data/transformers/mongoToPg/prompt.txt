@@ -1,0 +1,99 @@
+
+- in class named LookupRelationProcessor
+- write a java funciton named processLookupRelations(Document show, Long contentId, Connection pgConn)
+- show document has node named "fields"
+- fields node may have these nodes "parental-guide", "age-restriction", "category", "exclusive-badge", "badge", "genre", "badges" some are object arrays some are not handle any
+
+	in show document  exclusive_badge is exclusive_badge
+
+- sample fields object:
+
+{
+    "age-restriction": {
+        "title": "13+",
+        "contentId": 26
+    },
+    "exclusive_badge": [
+        {
+            "title": "Originals",
+            "contentId": 131644,
+            "fields": {
+                "order": {
+                    "number": 0
+                }
+            }
+        }
+    ],
+    "genre": [
+        {
+            "title": "Crime",
+            "contentId": 149704,
+            "fields": {
+                "added_date": {
+                    "date": {
+                        "$date": "2023-09-21T12:42:52.842Z"
+                    }
+                },
+                "order": {
+                    "number": 0
+                }
+            }
+        },
+        {
+            "title": "Drama",
+            "contentId": 69,
+            "fields": {
+                "order": {
+                    "number": 1
+                },
+                "added_date": {
+                    "date": {
+                        "$date": "2023-09-21T12:42:55.624Z"
+                    }
+                }
+            }
+        }
+    ],
+     "category": [
+        {
+            "title": "DRAME SERIES (DS)",
+            "contentId": 153290,
+            "fields": {
+                "order": {
+                    "number": 0
+                }
+            }
+        }
+    ],
+    "badges": [
+        {
+            "title": "tabii Originals Series",
+            "contentId": 182921,
+            "fields": {
+                "order": {
+                    "number": 0
+                }
+            }
+        }
+    ]
+  
+}
+- all this nodes have contentId that identifies the nodes
+- each of these seven nodes must exist in lookup_objects table in pg which has columnsbelow that you can use to find the related record
+	id bigint NOT NULL,
+    type text COLLATE pg_catalog."default" NOT NULL,
+
+- check and if the any node does not exist in lookup_objects table log and exit
+
+- for each node insert relation of lookup_objects and contents into content_lookup_relations table which has fields:
+
+    content_id bigint NOT NULL,
+    lookup_object_id bigint NOT NULL,
+    relation_type text COLLATE pg_catalog."default" NOT NULL,
+    
+    show id corresponds to content_id, lookup_object_id corresponds to contentId of 7 given nodes and node names(e.g. category) corresponds to relation_type
+    
+        
+- write a test function to check given show has migrated correctly with relations 
+- do not make assumptions ask if necessary
+- verify relation should only verify that in given show all related lookup objects are in lookup_objects table
