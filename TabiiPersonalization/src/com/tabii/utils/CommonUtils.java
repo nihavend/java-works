@@ -52,16 +52,10 @@ public class CommonUtils {
 	public static RedisProperties getRedisConnectionProps() {
 		
 	    Properties dbProps = CommonUtils.loadDbProperties();
-	    int port = 0;
 	    
-        try {
-        	String portStr = dbProps.getProperty("redis.port");
-            port =  Integer.valueOf(portStr);
-        } catch (NumberFormatException e){
-        }
-		String host = dbProps.getProperty("redis.host");
+		String url = dbProps.getProperty("redis.url");
 	    
-	    return new RedisProperties(port, host);
+	    return new RedisProperties(url);
 	}
 	
 }

@@ -49,10 +49,8 @@ public class MongoToPostgresContentExporter {
 			FindIterable<Document> shows = collection.find();
 			long count = collection.countDocuments();
 			System.out.println("#of shows " + count);
-			int i= 0;
 			for (Document show : shows) {
 				exportShow(show, pgConn);
-				System.out.println(i++);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -64,12 +62,14 @@ public class MongoToPostgresContentExporter {
 	private static void exportShow(Document show, Connection pgConn) {
 		try {
 
-			Long id = show.getLong("_id");
+			Long  id = show.getLong("id");
 
-//			if(id.longValue() != 191180) {
-//				return;
-//			}
-
+			if (id == null) {
+				id = show.getLong("_id");
+				System.out.println("_id:" + id + " content does not have id and body !");
+				return;
+			}
+			
 			String contentType = show.getString("type");
 			String title = show.getString("title");
 			String spot = null;

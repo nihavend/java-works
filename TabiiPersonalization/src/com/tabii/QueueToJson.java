@@ -14,7 +14,7 @@ public class QueueToJson {
 	
 		RedisProperties redisProperties = CommonUtils.getRedisConnectionProps();
 		
-		try (Jedis jedis = new Jedis(redisProperties.getHost(), redisProperties.getPort())) {
+		try (Jedis jedis = new Jedis(redisProperties.getUrl())) {
 		
 			// Create ObjectMapper for JSON handling
 			ObjectMapper mapper = new ObjectMapper();

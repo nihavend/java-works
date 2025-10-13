@@ -1,6 +1,18 @@
 package com.tabii.helpers;
 
+import java.util.Arrays;
+import java.util.List;
+
 public class TableManager {
+	
+	// The tables to deal with, sequence is important !
+	public static final List<String> tableNameList = Arrays.asList(
+			"users_id_seq", "users", "alter_users_id_seq",
+			"images_id_seq", "images", "alter_images_id_seq",
+			"content_images",
+			"lookup_objects", "contents",
+			"content_lookup_relations_id_seq", "content_lookup_relations"
+	/* , "content_images", "content_genres", "content_badges" */);
 
 	public static String create_users_id_seq() {
 
@@ -83,7 +95,26 @@ public class TableManager {
 				ALTER SEQUENCE public.images_id_seq OWNED BY public.images.id;
 				""";
 	}
-
+	
+	public static String create_content_images() {
+		return """
+			CREATE TABLE IF NOT EXISTS public.content_images
+			(
+			    content_id bigint NOT NULL,
+			    image_id integer NOT NULL,
+			    CONSTRAINT content_images_pkey PRIMARY KEY (content_id, image_id),
+			    CONSTRAINT content_images_content_id_fkey FOREIGN KEY (content_id)
+			        REFERENCES public.contents (id) MATCH SIMPLE
+			        ON UPDATE NO ACTION
+			        ON DELETE NO ACTION,
+			    CONSTRAINT content_images_image_id_fkey FOREIGN KEY (image_id)
+			        REFERENCES public.images (id) MATCH SIMPLE
+			        ON UPDATE NO ACTION
+			        ON DELETE NO ACTION
+			)				
+				""";
+	}
+	
 	public static String create_lookup_objects() {
 
 		return """

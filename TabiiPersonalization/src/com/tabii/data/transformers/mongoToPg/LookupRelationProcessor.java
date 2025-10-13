@@ -22,7 +22,7 @@ public class LookupRelationProcessor {
      */
     public static void processLookupRelations(Document show, Long contentId, Connection pgConn) throws SQLException {
         if (!show.containsKey("fields")) {
-            logger.severe("Show document does not contain 'fields'");
+            logger.severe("content id:" + contentId + " Show document does not contain 'fields'");
             return;
         }
         
@@ -39,9 +39,6 @@ public class LookupRelationProcessor {
                 List<Document> items = (List<Document>) nodeValue;
                 for (Document item : items) {
                 	Long lookupObjectId = item.getLong("contentId");
-                    if(lookupObjectId==47) {
-                    	System.out.println();
-                    }
                 	processNodeItem(item, contentId, lookupType, pgConn);
                 }
             } else if (nodeValue instanceof Document) {

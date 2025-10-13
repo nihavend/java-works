@@ -34,7 +34,7 @@ public class PgContentsToRedisExporter {
 
 		try (Connection pgConn = DriverManager.getConnection(pgProperties.getDbUrl(), pgProperties.getDbUser(),
 				pgProperties.getDbPassword());
-				Jedis jedis = new Jedis(redisProperties.getHost(), redisProperties.getPort())) {
+				Jedis jedis = new Jedis(redisProperties.getUrl())) {
 			Statement stmt = pgConn.createStatement();
 			ResultSet rs = stmt.executeQuery(
 					"SELECT id, title, description, spot, made_year, content_type, exclusive_badges FROM contents");

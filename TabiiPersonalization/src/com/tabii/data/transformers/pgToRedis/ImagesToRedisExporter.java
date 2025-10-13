@@ -26,7 +26,7 @@ public class ImagesToRedisExporter {
 
 		try (Connection pgConn = DriverManager.getConnection(pgProperties.getDbUrl(), pgProperties.getDbUser(),
 				pgProperties.getDbPassword());
-				Jedis jedis = new Jedis(redisProperties.getHost(), redisProperties.getPort())) {
+				Jedis jedis = new Jedis(redisProperties.getUrl())) {
 			String sql = "SELECT id, image_type, filename, title FROM images";
 
 			try (PreparedStatement ps = pgConn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {

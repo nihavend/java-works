@@ -1,25 +1,36 @@
 package com.tabii.data.transformers.pgToRedis;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import com.tabii.utils.CommonUtils;
 import com.tabii.utils.PgProperties;
 import com.tabii.utils.RedisProperties;
-import org.json.JSONArray;
-import org.json.JSONObject;
+
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 
-import java.sql.*;
-import java.util.*;
-
 public class LookupObjectsToRedisExporter {
-
+	
 	public static void main(String[] args) {
+		migrate();
+	}
+
+	public static void migrate() {
 		PgProperties pgProperties = CommonUtils.getPgConnectionProps();
 		RedisProperties redisProperties = CommonUtils.getRedisConnectionProps();
 
 		try (Connection pgConn = DriverManager.getConnection(pgProperties.getDbUrl(), pgProperties.getDbUser(),
 				pgProperties.getDbPassword());
-				JedisPool jedisPool = new JedisPool(redisProperties.getHost(), redisProperties.getPort());
+				JedisPool jedisPool = new JedisPool(redisProperties.getUrl());
 				Jedis jedis = jedisPool.getResource()) {
 
 			exportLookupObjects(pgConn, jedis);
