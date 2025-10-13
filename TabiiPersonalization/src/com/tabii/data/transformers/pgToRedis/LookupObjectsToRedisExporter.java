@@ -1,181 +1,177 @@
 package com.tabii.data.transformers.pgToRedis;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
-
 import com.tabii.utils.CommonUtils;
 import com.tabii.utils.PgProperties;
 import com.tabii.utils.RedisProperties;
-
+import org.json.JSONArray;
+import org.json.JSONObject;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 
+import java.sql.*;
+import java.util.*;
+
 public class LookupObjectsToRedisExporter {
 
-    public static void main(String[] args) {
-        PgProperties pgProperties = CommonUtils.getPgConnectionProps();
-        RedisProperties redisProperties = CommonUtils.getRedisConnectionProps();
+	public static void main(String[] args) {
+		PgProperties pgProperties = CommonUtils.getPgConnectionProps();
+		RedisProperties redisProperties = CommonUtils.getRedisConnectionProps();
 
-        try (Connection pgConn = DriverManager.getConnection(
-                pgProperties.getDbUrl(), pgProperties.getDbUser(), pgProperties.getDbPassword());
-             JedisPool jedisPool = new JedisPool(redisProperties.getHost(), redisProperties.getPort());
-             Jedis jedis = jedisPool.getResource()) {
+		try (Connection pgConn = DriverManager.getConnection(pgProperties.getDbUrl(), pgProperties.getDbUser(),
+				pgProperties.getDbPassword());
+				JedisPool jedisPool = new JedisPool(redisProperties.getHost(), redisProperties.getPort());
+				Jedis jedis = jedisPool.getResource()) {
 
-            exportLookupObjects(pgConn, jedis);
+			exportLookupObjects(pgConn, jedis);
 
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
+			System.out.println("✅ Export completed successfully.");
 
-    private static void exportLookupObjects(Connection pgConn, Jedis jedis) throws SQLException {
-        String sql = "SELECT id, type, fields FROM lookup_objects";
-        try (Statement stmt = pgConn.createStatement();
-             ResultSet rs = stmt.executeQuery(sql)) {
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 
-            while (rs.next()) {
-                long id = rs.getLong("id");
-                String type = rs.getString("type");
-                String fieldsJson = rs.getString("fields");
+	private static void exportLookupObjects(Connection pgConn, Jedis jedis) throws Exception {
+		String query = "SELECT id, type, fields FROM lookup_objects";
+		try (PreparedStatement ps = pgConn.prepareStatement(query); ResultSet rs = ps.executeQuery()) {
 
-                if (fieldsJson == null || fieldsJson.isEmpty()) continue;
+			while (rs.next()) {
+				long id = rs.getLong("id");
+				String type = rs.getString("type");
+				String fieldsJson = rs.getString("fields");
 
-                JSONObject fields = new JSONObject(fieldsJson);
-                String redisKey = type + ":" + id;
-                JSONObject redisValue = new JSONObject();
+				if (fieldsJson == null || fieldsJson.isEmpty())
+					continue;
 
-                switch (type) {
-                    case "exclusive-badge":
-                        redisValue = buildExclusiveBadgeValue(fields);
-                        break;
-                    case "badges":
-                        redisValue = buildBadgesValue(pgConn, id, fields);
-                        break;
-                    case "genre":
-                        redisValue = buildGenreValue(pgConn, id, fields);
-                        break;
-                    default:
-                        // Other types ignored
-                        continue;
-                }
+				JSONObject fields = new JSONObject(fieldsJson);
+				String redisKey = type + ":" + id;
 
-                jedis.set(redisKey, redisValue.toString());
-                System.out.println("✅ Saved to Redis -> " + redisKey + " = " + redisValue);
-            }
-        }
-    }
+				switch (type) {
+				case "exclusive-badge":
+					handleExclusiveBadge(jedis, redisKey, fields);
+					break;
 
-    private static JSONObject buildExclusiveBadgeValue(JSONObject fields) {
-        JSONObject badge = new JSONObject();
-        String badgeType = extractExclusiveBadgeType(fields);
-        badge.put("exclusiveBadgeType", badgeType);
+				case "badges":
+					handleBadge(pgConn, jedis, redisKey, id, fields);
+					break;
 
-        JSONArray arr = new JSONArray();
-        arr.put(badge);
+				case "genre":
+					handleGenre(pgConn, jedis, redisKey, id, fields);
+					break;
 
-        JSONObject result = new JSONObject();
-        result.put("exclusiveBadges", arr);
-        return result;
-    }
+				default:
+					// ignore unknown types
+					break;
+				}
+			}
+		}
+	}
 
-    private static String extractExclusiveBadgeType(JSONObject fields) {
-        // Example heuristic: extract from layout.key if exists
-        if (fields.has("layout")) {
-            JSONObject layout = fields.optJSONObject("layout");
-            if (layout != null && layout.has("key")) {
-                return layout.getString("key").toLowerCase();
-            }
-        }
-        return "originals";
-    }
+	private static void handleExclusiveBadge(Jedis jedis, String redisKey, JSONObject fields) {
+		String exclusiveType = fields.optJSONObject("layout") != null
+				? fields.getJSONObject("layout").optString("key", "")
+				: "";
 
-    private static JSONObject buildBadgesValue(Connection pgConn, long id, JSONObject fields) throws SQLException {
-        JSONObject obj = new JSONObject();
+		JSONObject badgeObj = new JSONObject();
+		badgeObj.put("exclusiveBadgeType", exclusiveType);
 
-        obj.put("bannerLocation", extractString(fields, "banner_location", "key"));
-        obj.put("id", id);
-        obj.put("showLocation", extractString(fields, "show_card_location", "key"));
-        obj.put("title", extractString(fields, "display_title", "text"));
-        obj.put("type", extractString(fields, "layout", "key"));
+		JSONArray arr = new JSONArray();
+		arr.put(badgeObj);
 
-        JSONArray imageIds = findImageIdsFromFields(pgConn, fields);
-        obj.put("images", imageIds);
+		JSONObject root = new JSONObject();
+		root.put("exclusiveBadges", arr);
 
-        return obj;
-    }
+		jedis.set(redisKey, root.toString());
+	}
 
-    private static JSONObject buildGenreValue(Connection pgConn, long id, JSONObject fields) throws SQLException {
-        JSONObject obj = new JSONObject();
-        obj.put("contentType", "genre");
-        obj.put("id", id);
-        obj.put("title", extractString(fields, "display_title", "text"));
+	private static void handleBadge(Connection pgConn, Jedis jedis, String redisKey, long id, JSONObject fields)
+			throws SQLException {
+		JSONObject badgeObj = new JSONObject();
+		badgeObj.put("bannerLocation", mapLocation(getNestedKey(fields, "banner_location.key")));
+		badgeObj.put("id", id);
+		badgeObj.put("images", getImageIdsFromFields(pgConn, fields));
+		badgeObj.put("showLocation", mapLocation(getNestedKey(fields, "show_card_location.key")));
+		badgeObj.put("title", getNestedKey(fields, "display_title.text"));
+		badgeObj.put("type", getNestedKey(fields, "layout.key"));
 
-        JSONArray imageIds = findImageIdsFromFields(pgConn, fields);
-        obj.put("images", imageIds);
+		jedis.set(redisKey, badgeObj.toString());
+	}
 
-        return obj;
-    }
+	private static void handleGenre(Connection pgConn, Jedis jedis, String redisKey, long id, JSONObject fields)
+			throws SQLException {
+		JSONObject genreObj = new JSONObject();
+		genreObj.put("contentType", "genre");
+		genreObj.put("id", id);
+		genreObj.put("images", getImageIdsFromFields(pgConn, fields));
+		genreObj.put("title", getNestedKey(fields, "display_title.text"));
 
-    private static JSONArray findImageIdsFromFields(Connection pgConn, JSONObject fields) throws SQLException {
-        List<String> fileNames = new ArrayList<>();
-        findFileNamesRecursive(fields, fileNames);
+		jedis.set(redisKey, genreObj.toString());
+	}
 
-        JSONArray imageIds = new JSONArray();
-        for (String fileName : fileNames) {
-            Long imageId = getImageIdByFilename(pgConn, fileName);
-            if (imageId != null) {
-                imageIds.put(imageId);
-            }
-        }
-        return imageIds;
-    }
+	private static JSONArray getImageIdsFromFields(Connection pgConn, JSONObject fields) throws SQLException {
+		List<Integer> imageIds = new ArrayList<>();
 
-    private static void findFileNamesRecursive(Object node, List<String> fileNames) {
-        if (node instanceof JSONObject) {
-            JSONObject obj = (JSONObject) node;
-            if (obj.optString("type").equals("image") && obj.has("fileName")) {
-                fileNames.add(obj.getString("fileName"));
-            }
-            for (String key : obj.keySet()) {
-                findFileNamesRecursive(obj.get(key), fileNames);
-            }
-        } else if (node instanceof JSONArray) {
-            JSONArray arr = (JSONArray) node;
-            for (int i = 0; i < arr.length(); i++) {
-                findFileNamesRecursive(arr.get(i), fileNames);
-            }
-        }
-    }
+		for (String key : fields.keySet()) {
+			Object val = fields.get(key);
+			if (val instanceof JSONObject) {
+				JSONObject node = (JSONObject) val;
+				if ("image".equalsIgnoreCase(node.optString("type"))) {
+					String fileName = node.optString("fileName");
+					if (fileName != null && !fileName.isEmpty()) {
+						Integer id = findImageIdByFilename(pgConn, fileName);
+						if (id != null)
+							imageIds.add(id);
+					}
+				}
+			}
+		}
 
-    private static Long getImageIdByFilename(Connection pgConn, String fileName) throws SQLException {
-        String sql = "SELECT id FROM images WHERE filename = ?";
-        try (PreparedStatement ps = pgConn.prepareStatement(sql)) {
-            ps.setString(1, fileName);
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    return rs.getLong("id");
-                }
-            }
-        }
-        return null;
-    }
+		JSONArray result = new JSONArray();
+		for (Integer imgId : imageIds)
+			result.put(imgId);
+		return result;
+	}
 
-    private static String extractString(JSONObject fields, String nodeKey, String subKey) {
-        if (fields.has(nodeKey)) {
-            JSONObject node = fields.optJSONObject(nodeKey);
-            if (node != null && node.has(subKey)) {
-                return node.optString(subKey);
-            }
-        }
-        return "";
-    }
+	private static Integer findImageIdByFilename(Connection pgConn, String filename) throws SQLException {
+		String sql = "SELECT id FROM images WHERE filename = ?";
+		try (PreparedStatement ps = pgConn.prepareStatement(sql)) {
+			ps.setString(1, filename);
+			try (ResultSet rs = ps.executeQuery()) {
+				if (rs.next())
+					return rs.getInt("id");
+			}
+		}
+		return null;
+	}
+
+	private static String getNestedKey(JSONObject obj, String path) {
+		String[] parts = path.split("\\.");
+		JSONObject current = obj;
+		for (int i = 0; i < parts.length - 1; i++) {
+			if (current.has(parts[i]) && current.get(parts[i]) instanceof JSONObject) {
+				current = current.getJSONObject(parts[i]);
+			} else {
+				return "";
+			}
+		}
+		return current.optString(parts[parts.length - 1], "");
+	}
+
+	private static String mapLocation(String key) {
+		switch (key) {
+		case "upper_right_corner":
+			return "rightTop";
+		case "upper_left_corner":
+			return "leftTop";
+		case "lower_left_corner":
+			return "leftBottom";
+		case "on_top_of_the_logo":
+			return "upLogo";
+		case "under_the_logo":
+			return "bottomLogo";
+		case "do_not_show":
+		default:
+			return "invisible";
+		}
+	}
 }
