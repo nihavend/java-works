@@ -7,8 +7,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -49,8 +47,12 @@ public class MongoToPostgresContentExporter {
 			MongoCollection<Document> collection = mongoDb.getCollection(mongoCollection);
 
 			FindIterable<Document> shows = collection.find();
+			long count = collection.countDocuments();
+			System.out.println("#of shows " + count);
+			int i= 0;
 			for (Document show : shows) {
 				exportShow(show, pgConn);
+				System.out.println(i++);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -64,9 +66,9 @@ public class MongoToPostgresContentExporter {
 
 			Long id = show.getLong("_id");
 
-			if(id.longValue() != 191180) {
-				return;
-			}
+//			if(id.longValue() != 191180) {
+//				return;
+//			}
 
 			String contentType = show.getString("type");
 			String title = show.getString("title");
@@ -109,7 +111,6 @@ public class MongoToPostgresContentExporter {
 
 			// Process nested relations
 			processImages(show, id, pgConn);
-			// processLookupRelations(show, id, pgConn);
 			LookupRelationProcessor.processLookupRelations(show, id, pgConn);
 			LookupRelationProcessor.verifyLookupRelations(id, pgConn);
 		} catch (Exception e) {
@@ -142,62 +143,6 @@ public class MongoToPostgresContentExporter {
 		}
 	}
 
-	private static void processLookupRelations(Document show, Long contentId, Connection pgConn) {
-//		List<String> lookupTypes = Arrays.asList("parental-guide", "age-restriction", "category", "exclusive-badge",
-//				"badge", "genre", "badges");
-		List<String> lookupTypes = Arrays.asList("exclusive-badge", "genre", "badges");
-		
-		List<PathNode> allDocs = flattenWithPaths(show, "show");
-
-		for (PathNode node : allDocs) {
-			Document doc = node.doc;
-
-			// System.out.println(doc.get("fields"));
-			Document fields = (Document) (doc.get("fields"));
-
-			if (fields == null)
-				continue;
-			
-			String type = null;
-			
-			for (String t : lookupTypes) {
-				System.out.println(t + " " + fields.toJson().toString());
-				if (fields.containsKey(t)) {
-					type = t;
-					break;
-				}
-				
-			}
-
-			// doc.get(type);
-
-			try {
-				Long lookupTypeId = getLookupTypeId(pgConn, type);
-				if (lookupTypeId == null) {
-					logger.warning("⚠️ Lookup object not found for type=" + type + " at path=" + node.path);
-					continue;
-				}
-
-				String relTable = switch (type) {
-				case "genre" -> "content_genres";
-				case "badge", "badges", "exclusive-badge" -> "content_badges";
-				default -> "content_lookup_relations";
-				};
-
-				String col2 = switch (type) {
-				case "genre" -> "genre_id";
-				case "badge", "badges", "exclusive-badge" -> "badge_id";
-				default -> "lookup_id";
-				};
-
-				insertRelation(pgConn, relTable, "content_id", col2, contentId, lookupTypeId);
-
-			} catch (Exception e) {
-				logger.warning(
-						"⚠️ Failed to map lookup type=" + type + " at path=" + node.path + ": " + e.getMessage());
-			}
-		}
-	}
 
 	private static int getImageIdByFilename(Connection pgConn, String filename) throws SQLException {
 		String sql = "SELECT id FROM images WHERE filename = ?";
@@ -208,17 +153,6 @@ public class MongoToPostgresContentExporter {
 				return rs.getInt("id");
 		}
 		return -1;
-	}
-
-	private static Long getLookupTypeId(Connection pgConn, String type) throws SQLException {
-		String sql = "SELECT id FROM lookup_objects WHERE type = ?";
-		try (PreparedStatement ps = pgConn.prepareStatement(sql)) {
-			ps.setString(1, type);
-			ResultSet rs = ps.executeQuery();
-			if (rs.next())
-				return rs.getLong("id");
-		}
-		return null;
 	}
 
 	private static void insertRelation(Connection pgConn, String table, String col1, String col2, Long id1, Long id2)
