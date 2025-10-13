@@ -1,102 +1,94 @@
+
+- do not user previous context start fresh
+
 - name of java file LookupObjectsToRedisExporter
+
 - use below helpers for connection properties	
 
-import com.tabii.utils.CommonUtils;
-import com.tabii.utils.PgProperties;
-import com.tabii.utils.RedisProperties;
-// PostgreSQL connection settings
-PgProperties pgProperties = CommonUtils.getPgConnectionProps();
+	import com.tabii.utils.CommonUtils;
+	import com.tabii.utils.PgProperties;
+	import com.tabii.utils.RedisProperties;
+    PgProperties pgProperties = CommonUtils.getPgConnectionProps();
+    RedisProperties redisProperties = CommonUtils.getRedisConnectionProps();
 
-// Redis connection settings
-RedisProperties redisProperties = CommonUtils.getRedisConnectionProps();
+    try (Connection pgConn = DriverManager.getConnection(
+                 pgProperties.getDbUrl(), pgProperties.getDbUser(), pgProperties.getDbPassword());
+         JedisPool jedisPool = new JedisPool(redisProperties.getHost(), redisProperties.getPort());
+         Jedis jedis = jedisPool.getResource()) {
 
 - read a pg table named lookup_objects 
-id integer NOT NULL DEFAULT nextval('lookup_objects_id_seq'::regclass),
+
+    id bigint NOT NULL,
     type text COLLATE pg_catalog."default" NOT NULL,
-    typeid bigint,
     audit json,
     body json,
     fields json,
     isactive boolean,
     metadata json,
-    path text COLLATE pg_catalog."default",
     paths json,
+    path text COLLATE pg_catalog."default",
     published json,
     site text COLLATE pg_catalog."default",
     title text COLLATE pg_catalog."default",
     viewcount bigint,
     audit_user_id bigint,
-    CONSTRAINT lookup_objects_pkey PRIMARY KEY (id),
-    CONSTRAINT lookup_objects_audit_user_id_fkey FOREIGN KEY (audit_user_id)
-        REFERENCES public.users (id) MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE NO ACTION
+    
+- write each type to corresponding redis key as type:id according to following rules
 
-- transform the data according to type
-- write each type to corresponding redis key as type:typeid 
-- for exclusive-badge in field column : use this schema for destination redis value 
+
+
+- for type is "exclusive-badge" : use this schema for destination redis value
                     "exclusiveBadges": [
                         {
                             "exclusiveBadgeType": "originals"
                         }
                     ],
-- for badges in field column : use this schema for destination redis value : 
-                    "badges": [
-                        {
-                            "bannerLocation": "upLogo",
-                            "id": 182921,
-                            "images": [
-                                {
-                                    "contentType": "image",
-                                    "imageType": "background",
-                                    "name": "26087_0-0-144-144.jpeg",
-                                    "title": "Tabii Original Badges"
-                                }
-                            ],
-                            "showLocation": "leftTop",
-                            "title": "tabii original series",
-                            "type": "icon"
-                        }
-                    ],
-but replace image object in images array with an id of images, at the and the array of images  will be represented.  you will get the ids from images table. use name is key to get id from images table
-(
-    id integer NOT NULL DEFAULT nextval('images_id_seq'::regclass),
+
+- there is images table with columns
+  id integer NOT NULL DEFAULT nextval('images_id_seq'::regclass),
     image_type text COLLATE pg_catalog."default",
     filename text COLLATE pg_catalog."default",
     title text COLLATE pg_catalog."default",
     url text COLLATE pg_catalog."default",
-    CONSTRAINT images_pkey PRIMARY KEY (id),
-    CONSTRAINT images_filename_key UNIQUE (filename)
-)
 
-- for genres in field column : use this schema for destination redis value :
-				"genres": [
+- for badges search within nested nodes that have type image and put that images ids into array images array. find ids from images table wtih filename
+
+e.g :
+        "cover_image": {
+            "url": "https://cms-tabii-public-image.tabii.com/int/27834_0-0-4319-2099.jpeg",
+            "title": "Kuzgun Dipsiz Karanlık Cover Image",
+            "type": "image",
+            "fileName": "27834_0-0-4319-2099.jpeg"
+        },
+        
+        
+
+- for type is "badges"  : use this schema for destination redis value :  attributes may be parsed from fields column of corresponding type with matching id
+                        {
+                            "bannerLocation": "upLogo",
+                            "id": 182921,
+                            "images": [id_of_image],
+                            "showLocation": "leftTop",
+                            "title": "tabii original series",
+                            "type": "icon"
+                        }
+
+- for genre search within nested nodes that have type image and put that images ids into array images array. find ids from images table wtih filename
+
+- for type is "genre"  : use this schema for destination redis value : attributes may be parsed from fields column of corresponding type with matching id
                         {
                             "contentType": "genre",
                             "id": 149704,
-                            "images": [
-                                {
-                                    "contentType": "image",
-                                    "imageType": "background",
-                                    "name": "22156_0-0-3840-2400.jpeg",
-                                    "title": "crime_genre"
-                                }
-                            ],
+                            "images": [id_of_image],
                             "title": "Crime"
                         },
-                        {
-                            "contentType": "genre",
-                            "id": 69,
-                            "images": [
-                                {
-                                    "contentType": "image",
-                                    "imageType": "background",
-                                    "name": "22145_0-0-3840-2400.jpeg",
-                                    "title": "drama_genre"
-                                }
-                            ],
-                            "title": "Drama"
-                        }
-                    ], 
                     
-   but replace image object in images array with an id of images, at the and the array of images  will be represented.  you will get the ids from images table. use name is key to get id from images table
+   
+   
+   sample fields column
+   
+   {"layout": {"key": "icon", "value": "Icon", "metadata": {}}, "badge_image": {"url": "https://cms-tabii-public-image.tabii.com/int/26087.jpeg", "type": "image", "title": "Tabii Original Badges", "fileName": "26087.jpeg"}, "display_title": {"text": "tabii original program"}, "banner_location": {"key": "on_top_of_the_logo", "value": "On Top Of The Logo", "metadata": {}}, "show_card_location": {"key": "upper_left_corner", "value": "Upper Left Corner", "metadata": {}}}
+   
+      
+   
+   - do not filter isActive
