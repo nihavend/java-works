@@ -1,0 +1,91 @@
+- java classname QueueToJson
+- get default queue:1 value : {"rows":["149015"]}
+- use below helpers for connection properties	
+
+	import com.tabii.utils.CommonUtils;
+	import com.tabii.utils.RedisProperties;
+
+    RedisProperties redisProperties = CommonUtils.getRedisConnectionProps();
+- password not required for redis    
+    
+- write output json to file :queue_1.json
+- working in redis
+- queue  key queue:id, value like {"rows":["149015"]}
+- row  key row:id, value like {"rowType":"banner","shows":["191180","155856"]}
+- shows key show:id value like {"badges":[],"images":["91984","91985"],"genres":["153350"],"spot":"Explore ...","madeYear":2013,"description":"Ahmet welcomes ...","title":"SIHIRLI_MATEMATIK","favorite":false,"contentType":"series"}
+- image key image:id contains  images
+- badges key badges:id contains of badges
+- genre key genre:id contains genres
+
+get queue and create a json, get the ids of object and put the values in
+
+put every show in contents array and put the id of show 
+
+
+sample result (exclusiveBadges is optional) :
+
+{
+    "data": [
+        {
+            "contents": [
+                {
+                    "badges": [
+                        {
+                            "bannerLocation": "upLogo",
+                            "id": 182921,
+                            "images": [
+                                {
+                                    "contentType": "image",
+                                    "imageType": "background",
+                                    "name": "26087_0-0-144-144.jpeg",
+                                    "title": "Tabii Original Badges"
+                                }
+                            ],
+                            "showLocation": "leftTop",
+                            "title": "tabii original series",
+                            "type": "icon"
+                        }
+                    ],
+                    "contentType": "series",
+                    "description": "Mehmet, a former police chief who has quickly risen through the ranks, has a hidden talent no one knows. As unsolved murder cases pile up, Mehmet is offered a consultancy role with special powers.",
+                    "exclusiveBadges": [
+                        {
+                            "exclusiveBadgeType": "originals"
+                        }
+                    ],
+                    "favorite": false,
+                    "genres": [
+                        {
+                            "contentType": "genre",
+                            "id": 149704,
+                            "images": [
+                                {
+                                    "contentType": "image",
+                                    "imageType": "background",
+                                    "name": "22156_0-0-3840-2400.jpeg",
+                                    "title": "crime_genre"
+                                }
+                            ],
+                            "title": "Crime"
+                        }
+                    ],
+                    "id": 191180,
+                    "images": [
+                        {
+                            "contentType": "image",
+                            "imageType": "mainWithLogo",
+                            "name": "35050_0-0-3839-2160.png",
+                            "title": "KUZGUN_DIPSIZ_KARANLIK ENG Main Image"
+                        }
+                    ],
+                    "madeYear": 2023,
+                    "spot": "Mehmet, who was born with the ability to see and reveal evil, embarks on a journey between good and bad, and goes after serial killers.",
+                    "title": "The Raven: Deep Darkness"
+                }
+            "id": 149015,
+            "rowType": "banner"
+        }
+    ]
+}                
+
+- show a sample json of the result of java code
