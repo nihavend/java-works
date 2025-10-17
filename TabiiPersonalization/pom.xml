@@ -9,16 +9,37 @@
 		<sourceDirectory>src</sourceDirectory>
 		<plugins>
 			<plugin>
+			    <groupId>org.springframework.boot</groupId>
+			    <artifactId>spring-boot-maven-plugin</artifactId>
+			    <version>3.1.4</version>
+			</plugin>    		
+			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.13.0</version>
 				<configuration>
-					<release>23</release>
+				 	<parameters>true</parameters> 
+					<release>17</release>
 				</configuration>
 			</plugin>
 		</plugins>
 	</build>
 
 	<dependencies>
+		<!-- Spring Boot starter web -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+			<version>3.5.6</version>
+		</dependency>
+		
+		    <!-- SLF4J API -->
+	    <dependency>
+	        <groupId>org.slf4j</groupId>
+	        <artifactId>slf4j-api</artifactId>
+	        <version>2.0.16</version> <!-- Use the latest compatible version -->
+	    </dependency>
+	    <!-- Logback Classic (SLF4J binding for Logback) -->
+	
 		<!-- Bean Validation API -->
 		<dependency>
 			<groupId>jakarta.validation</groupId>
@@ -57,28 +78,7 @@
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-annotations</artifactId>
 			<version>2.17.2</version>
-		</dependency>
-
-		<!-- Spring Boot starter web -->
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-web</artifactId>
-			<version>3.5.6</version>
-		</dependency>
-		
-		    <!-- SLF4J API -->
-	    <dependency>
-	        <groupId>org.slf4j</groupId>
-	        <artifactId>slf4j-api</artifactId>
-	        <version>2.0.16</version> <!-- Use the latest compatible version -->
-	    </dependency>
-	    <!-- Logback Classic (SLF4J binding for Logback) -->
-	    <dependency>
-	        <groupId>ch.qos.logback</groupId>
-	        <artifactId>logback-classic</artifactId>
-	        <version>1.5.12</version> <!-- Use the latest compatible version -->
-	    </dependency>
-	    
+		</dependency>   
 	    
 	   	<!-- Migration Dependencies -->
 	   	

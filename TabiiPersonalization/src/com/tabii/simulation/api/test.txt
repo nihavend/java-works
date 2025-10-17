@@ -1,0 +1,6 @@
+curl -X POST "http://localhost:8080/redis/set?key=test&value=hello"
+curl "http://localhost:8080/redis/get?key=test"
+curl -X DELETE "http://localhost:8080/redis/del?key=test"
+
+
+curl "http://localhost:8080/api/queues/1"

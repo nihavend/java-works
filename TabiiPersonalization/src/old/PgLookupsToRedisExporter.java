@@ -269,13 +269,13 @@ public class PgLookupsToRedisExporter {
 //		}
 
 		// --- Insert badge images ---
-		if (doc.containsKey("images")) {
-			List<Document> images = (List<Document>) doc.get("images");
-			for (Document img : images) {
-				int imageId = upsertImage(img, pgConn);
-				linkBadgeImage(id, imageId, pgConn);
-			}
-		}
+//		if (doc.containsKey("images")) {
+//			List<Document> images = (List<Document>) doc.get("images");
+//			for (Document img : images) {
+//				int imageId = upsertImage(img, pgConn);
+//				linkBadgeImage(id, imageId, pgConn);
+//			}
+//		}
 	}
 	
 	private static int getLayoutIdFromPostgres(String layoutKey, Connection pgConn) throws SQLException {

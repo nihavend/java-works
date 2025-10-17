@@ -1,0 +1,13 @@
+ChatGPT
+💬 Prompt:
+
+Write a complete Spring Boot sample using Jedis.
+
+Requirements:
+• Java class name: RedisRestTestApplication
+• Include working configuration, service, and REST controller classes.
+• Use JedisPool for Redis connection management.
+• Fix the org.springframework.jmx.export.UnableToRegisterMBeanException error by disabling JMX properly in the main class.
+• Show a working folder structure and Maven pom.xml dependencies.
+
+The app should start with mvn spring-boot:run without JMX errors.

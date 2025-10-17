@@ -6,6 +6,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class TabiiRestApp {
     public static void main(String[] args) {
-        SpringApplication.run(TabiiRestApp.class, args);
+        SpringApplication app = new SpringApplication(TabiiRestApp.class);
+        // This line fully disables JMX before context initialization
+        app.setRegisterShutdownHook(false);
+        System.setProperty("spring.jmx.enabled", "false");
+        app.run(args);
     }
 }
