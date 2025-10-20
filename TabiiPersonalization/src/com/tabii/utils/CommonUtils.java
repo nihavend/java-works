@@ -57,5 +57,14 @@ public class CommonUtils {
 	    
 	    return new RedisProperties(url);
 	}
-	
+
+	public static MemcachedProperties getMemcachedConnectionProps() {
+		
+	    Properties dbProps = CommonUtils.loadDbProperties();
+	    
+		String url = dbProps.getProperty("memcached.servers");
+		int expireSeconds = Integer.parseInt(dbProps.getProperty("memcached.expire.seconds"));
+		
+	    return new MemcachedProperties(url, expireSeconds);
+	}
 }
