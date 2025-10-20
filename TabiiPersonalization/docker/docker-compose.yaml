@@ -68,3 +68,36 @@ services:
     depends_on:
       - postgres
       - redpanda
+
+  hazelcast1:
+    image: hazelcast/hazelcast:5.4.0
+    container_name: hazelcast1
+    ports:
+       - "5701:5701"
+    environment:
+      - HZ_CLUSTERNAME=dev
+      - HZ_NETWORK_JOIN_TCPIP_ENABLED=true
+      - HZ_NETWORK_JOIN_MULTICAST_ENABLED=false
+      - HZ_NETWORK_JOIN_TCPIP_MEMBERLIST=hazelcast1,hazelcast2
+
+  hazelcast2:
+    image: hazelcast/hazelcast:5.4.0
+    container_name: hazelcast2
+    ports:
+      - "5702:5701"
+    environment:
+      - HZ_CLUSTERNAME=dev
+      - HZ_NETWORK_JOIN_TCPIP_ENABLED=true
+      - HZ_NETWORK_JOIN_MULTICAST_ENABLED=false
+      - HZ_NETWORK_JOIN_TCPIP_MEMBERLIST=hazelcast1,hazelcast2
+  management-center:
+    image: hazelcast/management-center:5.4.0
+    container_name: hazelcast-mancenter
+    ports:
+      - "8090:8080"
+    environment:
+      - MC_DEFAULT_CLUSTER=dev
+      - MC_DEFAULT_CLUSTER_MEMBERS=hazelcast1:5701,hazelcast2:5701
+    depends_on:
+      - hazelcast1
+      - hazelcast2
