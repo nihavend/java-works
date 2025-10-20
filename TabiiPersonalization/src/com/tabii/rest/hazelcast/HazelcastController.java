@@ -1,0 +1,30 @@
+package com.tabii.rest.hazelcast;
+
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@RequestMapping("/hazelcast")
+public class HazelcastController {
+
+    private final HazelcastService hazelcastService;
+
+    public HazelcastController(HazelcastService hazelcastService) {
+        this.hazelcastService = hazelcastService;
+    }
+
+    @PostMapping("/{key}")
+    public String put(@PathVariable String key, @RequestBody String value) {
+        hazelcastService.putValue(key, value);
+        return "Stored " + key;
+    }
+
+    @GetMapping("/{key}")
+    public String get(@PathVariable String key) {
+        return hazelcastService.getValue(key);
+    }
+}
