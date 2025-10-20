@@ -3,7 +3,11 @@ package com.tabii.helpers;
 public class DefaultsHolder {
 	
 	
-	public static final String[] defaultQueue = {"queue:1", "{\"rows\":[\"149015\"]}"};
+	public static final String[] defaultQueue = {
+			"queue:1", "{\"rows\":[\"149015\"]}",
+			"queue:2", "{\"rows\":[\"149015\", \"335173\"]}",
+			"queue:3", "{\"rows\":[\"149015\", \"335173\", \"435386\"]}"
+			};
 	
 	public static final String[] defaultRows = {
 			"row:149015",
