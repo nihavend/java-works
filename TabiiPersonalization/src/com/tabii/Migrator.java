@@ -15,14 +15,22 @@ import java.util.logging.Logger;
 import com.tabii.data.transformers.mongoToPg.MongoToPostgresContentExporter;
 import com.tabii.data.transformers.mongoToPg.MongoToPostgresLookups;
 import com.tabii.data.transformers.mongoToPg.MongoToPostgresShowLookupImagesExporter;
+import com.tabii.data.transformers.pgToMemcached.ContentsExporter;
+import com.tabii.data.transformers.pgToMemcached.Helper;
+import com.tabii.data.transformers.pgToMemcached.ImagesExporter;
+import com.tabii.data.transformers.pgToMemcached.LookupsExporter;
 import com.tabii.data.transformers.pgToRedis.ImagesToRedisExporter;
 import com.tabii.data.transformers.pgToRedis.LookupObjectsToRedisExporter;
 import com.tabii.data.transformers.pgToRedis.PgContentsToRedisExporter;
+import com.tabii.helpers.DefaultsHolder;
 import com.tabii.helpers.TableManager;
 import com.tabii.utils.CommonUtils;
+import com.tabii.utils.MemcachedProperties;
 import com.tabii.utils.PgProperties;
 import com.tabii.utils.RedisProperties;
 
+import net.spy.memcached.MemcachedClient;
+import net.spy.memcached.internal.OperationFuture;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.params.ScanParams;
 import redis.clients.jedis.resps.ScanResult;
@@ -40,6 +48,7 @@ public class Migrator {
 	public static void buildUp() throws Exception {
 		mongoTopg();
 		pgToredis();
+		pgToMemecached();
 	}
 
 	public static void cleanUp() {
@@ -57,42 +66,81 @@ public class Migrator {
 		ImagesToRedisExporter.migrate();
 		LookupObjectsToRedisExporter.migrate();
 		PgContentsToRedisExporter.migrate();
-		setDefaultValues();
+		setRedisDefaultValues();
 	}
 	
-	private static void setDefaultValues() {
+	private static void pgToMemecached() {
+		ImagesExporter.migrate();
+		LookupsExporter.migrate();
+		ContentsExporter.migrate();
+		setMemcachedDefaultValues();
+	}
+
+	private static void setRedisDefaultValues() {
 		RedisProperties redisProperties = CommonUtils.getRedisConnectionProps();
 		try (Jedis jedis = new Jedis(redisProperties.getUrl())) {
 			jedis.connect();
-			jedis.set("queue:1", "{\"rows\":[\"149015\"]}");
 			
-			jedis.set("row:149015", 
-					"""
-					{"rowType":"banner","shows":["191180","155856","154520","524755","154554","155919"]}
-					""");
+			String res = jedis.set(DefaultsHolder.defaultQueue[0], DefaultsHolder.defaultQueue[1]);
+			System.out.println(res);
+			res = jedis.set(DefaultsHolder.defaultQueue[2], DefaultsHolder.defaultQueue[3]);
+			System.out.println(res);
+			res = jedis.set(DefaultsHolder.defaultQueue[4], DefaultsHolder.defaultQueue[5]);
+			System.out.println(res);
+			
+			res = jedis.set(DefaultsHolder.defaultRows[0], DefaultsHolder.defaultRows[1]);
+			System.out.println(res);
+			res = jedis.set(DefaultsHolder.defaultRows[2], DefaultsHolder.defaultRows[3]);
+			System.out.println(res);
+			res = jedis.set(DefaultsHolder.defaultRows[4], DefaultsHolder.defaultRows[5]);
+			System.out.println(res);
 
-			jedis.set("row:335173", 
-			"""
-			{"rowType":"show",
-				"shows":["551977","11780","190229","550159","535767","535772",
-						 "235569","535573","386977","535347","531911","531620",
-						 "530824","530718","498557","468020","521469","155034",
-						 "432246","447209","447315","434445","6515","380479","408055",
-						 "181","398692","429555","407752","164641","240372","189930",
-						 "5931","190076","159429","8283","6496","434700","190061"]}			
-			""");
-			
-			jedis.set("row:435386",
-			"""
-			{"rowType":"show",
-				"shows":["524745","522092","436053","436525","420725","436138","436042",
-					     "436037","436143","436440","436103","436108","436098","436133",
-					     "437198","436128","436032","235569","7095","436022","165295",
-					     "409029","161628","231582","308539","436148","436158","436652",
-					     "436168","436163","436633","436093","436153","436012","441128"]}
-			""");
+			System.out.println(DefaultsHolder.defaultQueue[0] + " " + jedis.get(DefaultsHolder.defaultQueue[0]));
+			System.out.println(DefaultsHolder.defaultQueue[2] + " " + jedis.get(DefaultsHolder.defaultQueue[2]));
+			System.out.println(DefaultsHolder.defaultQueue[4] + " " + jedis.get(DefaultsHolder.defaultQueue[4]));
+
+			System.out.println(DefaultsHolder.defaultRows[0] + " " + jedis.get(DefaultsHolder.defaultRows[0]));
+			System.out.println(DefaultsHolder.defaultRows[2] + " " + jedis.get(DefaultsHolder.defaultRows[2]));
+			System.out.println(DefaultsHolder.defaultRows[4] + " " + jedis.get(DefaultsHolder.defaultRows[4]));
+
 		}
-		
+	}
+
+	private static void setMemcachedDefaultValues() {
+		MemcachedProperties memcachedProperties = CommonUtils.getMemcachedConnectionProps();
+		MemcachedClient mc = null;
+
+		try {
+
+			mc = new MemcachedClient(Helper.getServers(memcachedProperties.getServers()));
+
+			OperationFuture<Boolean> b = mc.set(DefaultsHolder.defaultQueue[0], 360000, DefaultsHolder.defaultQueue[1]);
+			System.out.println(b.isDone());
+			b = mc.set(DefaultsHolder.defaultQueue[2], 360000, DefaultsHolder.defaultQueue[3]);
+			System.out.println(b.isDone());
+			b = mc.set(DefaultsHolder.defaultQueue[4], 360000, DefaultsHolder.defaultQueue[5]);
+			System.out.println(b.isDone());
+			b = mc.set(DefaultsHolder.defaultRows[0], 360000, DefaultsHolder.defaultRows[1]);
+			System.out.println(b.isDone());
+			b = mc.set(DefaultsHolder.defaultRows[2], 360000, DefaultsHolder.defaultRows[3]);
+			System.out.println(b.isDone());
+			b = mc.set(DefaultsHolder.defaultRows[4], 360000, DefaultsHolder.defaultRows[5]);
+
+			System.out.println(DefaultsHolder.defaultQueue[0] + " " + mc.get(DefaultsHolder.defaultQueue[0]));
+			System.out.println(DefaultsHolder.defaultQueue[2] + " " + mc.get(DefaultsHolder.defaultQueue[2]));
+			System.out.println(DefaultsHolder.defaultQueue[4] + " " + mc.get(DefaultsHolder.defaultQueue[4]));
+			
+			System.out.println(DefaultsHolder.defaultRows[0] + " " + mc.get(DefaultsHolder.defaultRows[0]));
+			System.out.println(DefaultsHolder.defaultRows[2] + " " + mc.get(DefaultsHolder.defaultRows[2]));
+			System.out.println(DefaultsHolder.defaultRows[4] + " " + mc.get(DefaultsHolder.defaultRows[4]));
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			if (mc != null) {
+				mc.shutdown();
+			}
+		}
 	}
 
 	public static void cleanRedis() {
@@ -151,7 +199,7 @@ public class Migrator {
 					createTable(pgConn, tableName);
 				}
 			}
-			
+
 			System.out.println("CleanUp completed !");
 
 		} catch (SQLException e) {
