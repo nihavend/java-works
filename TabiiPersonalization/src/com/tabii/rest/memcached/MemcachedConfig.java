@@ -1,4 +1,4 @@
-package com.tabii.memcachedclient;
+package com.tabii.rest.memcached;
 
 import java.net.InetSocketAddress;
 import java.util.ArrayList;

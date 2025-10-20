@@ -1,4 +1,4 @@
-package com.tabii.memcachedclient;
+package com.tabii.rest.memcached;
 
 import java.util.List;
 import java.util.Map;

@@ -1,4 +1,4 @@
-package com.tabii.memcachedclient;
+package com.tabii.rest.memcached;
 
 import net.spy.memcached.MemcachedClient;
 import org.springframework.beans.factory.annotation.Value;
