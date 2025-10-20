@@ -1,4 +1,4 @@
-package com.tabii.redisclient;
+package com.tabii.restredis;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

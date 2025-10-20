@@ -1,4 +1,4 @@
-package com.tabii.redisclient;
+package com.tabii.restredis;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;

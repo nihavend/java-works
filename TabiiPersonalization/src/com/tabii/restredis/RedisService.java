@@ -1,4 +1,4 @@
-package com.tabii.redisclient;
+package com.tabii.restredis;
 
 import java.util.HashMap;
 import java.util.List;
