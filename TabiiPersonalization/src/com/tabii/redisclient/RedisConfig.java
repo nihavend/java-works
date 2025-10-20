@@ -1,4 +1,4 @@
-package com.tabii.simulation.api;
+package com.tabii.redisclient;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
