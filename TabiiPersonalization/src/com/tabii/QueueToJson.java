@@ -13,8 +13,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.tabii.memcachedclient.MemcachedService;
-import com.tabii.redisclient.RedisService;
+import com.tabii.rest.memcached.MemcachedService;
+import com.tabii.rest.redis.RedisService;
 import com.tabii.utils.CommonUtils;
 import com.tabii.utils.RedisProperties;
 
