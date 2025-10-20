@@ -1,0 +1,2 @@
+curl -X POST http://localhost:8080/hazelcast/hello -d "world"
+curl http://localhost:8080/hazelcast/hello
