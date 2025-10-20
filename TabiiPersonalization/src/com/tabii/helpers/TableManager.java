@@ -9,8 +9,8 @@ public class TableManager {
 	public static final List<String> tableNameList = Arrays.asList(
 			"users_id_seq", "users", "alter_users_id_seq",
 			"images_id_seq", "images", "alter_images_id_seq",
-			"content_images",
 			"lookup_objects", "contents",
+			"content_images",
 			"content_lookup_relations_id_seq", "content_lookup_relations"
 	/* , "content_images", "content_genres", "content_badges" */);
 
