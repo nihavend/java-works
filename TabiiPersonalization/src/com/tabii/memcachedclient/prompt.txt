@@ -1,0 +1,5 @@
+chatGPT
+🧠 Prompt for this result
+
+springboot architecture using memcached
+give full working example with configuration and service layers, including single and bulk get operations using spymemcached

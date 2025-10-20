@@ -17,7 +17,7 @@ services:
         - MONGO_INITDB_ROOT_PASSWORD=mongoadmin
   
   postgres:
-    image: postgres:15
+    image: postgres:latest
     environment:
       POSTGRES_USER: demo
       POSTGRES_PASSWORD: demo

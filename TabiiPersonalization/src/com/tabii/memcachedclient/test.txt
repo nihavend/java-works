@@ -1,0 +1,7 @@
+curl -X POST "http://localhost:8080/cache/set?key=user:1&value=John"
+curl -X GET "http://localhost:8080/cache/get?key=user:1"
+curl -X DELETE "http://localhost:8080/cache/delete?key=user:1"
+
+
+curl -X GET "http://localhost:8080/cache/queues/1"
+
