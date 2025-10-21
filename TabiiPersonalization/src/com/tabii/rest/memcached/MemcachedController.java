@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.tabii.QueueToJson;
+import com.tabii.MemcQueueToJson;
 
 @RestController
 @RequestMapping("/cache")
@@ -58,7 +58,7 @@ public class MemcachedController {
 		if (queueJson == null) {
 			throw new RuntimeException("Queue not found!");
 		}
-		ObjectNode resultJson = QueueToJson.parseQueueJson(memcachedService, mapper, queueJson);
+		ObjectNode resultJson = MemcQueueToJson.parseQueueJson(memcachedService, mapper, queueJson);
 		// System.out.println("Bitti : " + (System.currentTimeMillis() - start));
 
 		return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(resultJson);
