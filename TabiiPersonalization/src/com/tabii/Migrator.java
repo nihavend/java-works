@@ -12,11 +12,14 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
 
+import com.hazelcast.client.HazelcastClient;
+import com.hazelcast.client.config.ClientConfig;
+import com.hazelcast.core.HazelcastInstance;
+import com.hazelcast.map.IMap;
 import com.tabii.data.transformers.mongoToPg.MongoToPostgresContentExporter;
 import com.tabii.data.transformers.mongoToPg.MongoToPostgresLookups;
 import com.tabii.data.transformers.mongoToPg.MongoToPostgresShowLookupImagesExporter;
 import com.tabii.data.transformers.pgToMemcached.ContentsExporter;
-import com.tabii.data.transformers.pgToMemcached.Helper;
 import com.tabii.data.transformers.pgToMemcached.ImagesExporter;
 import com.tabii.data.transformers.pgToMemcached.LookupsExporter;
 import com.tabii.data.transformers.pgToRedis.ImagesToRedisExporter;
@@ -25,6 +28,7 @@ import com.tabii.data.transformers.pgToRedis.PgContentsToRedisExporter;
 import com.tabii.helpers.DefaultsHolder;
 import com.tabii.helpers.TableManager;
 import com.tabii.utils.CommonUtils;
+import com.tabii.utils.HazelcastProperties;
 import com.tabii.utils.MemcachedProperties;
 import com.tabii.utils.PgProperties;
 import com.tabii.utils.RedisProperties;
@@ -39,21 +43,26 @@ public class Migrator {
 
 	private static final Logger logger = Logger.getLogger("Migrator");
 
+	public static final List<String> maps = Arrays.asList("imagesMap", "exclusiveBadgesMap", "badgesMap", "genreMap", "showsMap");
+
 	public static void main(String[] args) throws Exception {
 
-		cleanUp();
-		buildUp();
+		cleanHazelCast();
+		pgToHazelcast();
+		// cleanUp();
+		// buildUp();
+	}
+
+	public static void cleanUp() {
+		cleanUpPg();
+		cleanRedis();
 	}
 
 	public static void buildUp() throws Exception {
 		mongoTopg();
 		pgToredis();
 		pgToMemecached();
-	}
-
-	public static void cleanUp() {
-		cleanUpPg();
-		cleanRedis();
+		pgToHazelcast();
 	}
 
 	private static void mongoTopg() throws Exception {
@@ -68,7 +77,7 @@ public class Migrator {
 		PgContentsToRedisExporter.migrate();
 		setRedisDefaultValues();
 	}
-	
+
 	private static void pgToMemecached() {
 		ImagesExporter.migrate();
 		LookupsExporter.migrate();
@@ -76,18 +85,25 @@ public class Migrator {
 		setMemcachedDefaultValues();
 	}
 
+	private static void pgToHazelcast() {
+		com.tabii.data.transformers.pgToHazelcast.ImagesExporter.migrate();
+		com.tabii.data.transformers.pgToHazelcast.LookupsExporter.migrate();
+		com.tabii.data.transformers.pgToHazelcast.ContentsExporter.migrate();
+		setHazelcastDefaultValues();
+	}
+
 	private static void setRedisDefaultValues() {
 		RedisProperties redisProperties = CommonUtils.getRedisConnectionProps();
 		try (Jedis jedis = new Jedis(redisProperties.getUrl())) {
 			jedis.connect();
-			
+
 			String res = jedis.set(DefaultsHolder.defaultQueue[0], DefaultsHolder.defaultQueue[1]);
 			System.out.println(res);
 			res = jedis.set(DefaultsHolder.defaultQueue[2], DefaultsHolder.defaultQueue[3]);
 			System.out.println(res);
 			res = jedis.set(DefaultsHolder.defaultQueue[4], DefaultsHolder.defaultQueue[5]);
 			System.out.println(res);
-			
+
 			res = jedis.set(DefaultsHolder.defaultRows[0], DefaultsHolder.defaultRows[1]);
 			System.out.println(res);
 			res = jedis.set(DefaultsHolder.defaultRows[2], DefaultsHolder.defaultRows[3]);
@@ -112,7 +128,7 @@ public class Migrator {
 
 		try {
 
-			mc = new MemcachedClient(Helper.getServers(memcachedProperties.getServers()));
+			mc = new MemcachedClient(CommonUtils.getServers(memcachedProperties.getServers()));
 
 			OperationFuture<Boolean> b = mc.set(DefaultsHolder.defaultQueue[0], 360000, DefaultsHolder.defaultQueue[1]);
 			System.out.println(b.isDone());
@@ -129,7 +145,7 @@ public class Migrator {
 			System.out.println(DefaultsHolder.defaultQueue[0] + " " + mc.get(DefaultsHolder.defaultQueue[0]));
 			System.out.println(DefaultsHolder.defaultQueue[2] + " " + mc.get(DefaultsHolder.defaultQueue[2]));
 			System.out.println(DefaultsHolder.defaultQueue[4] + " " + mc.get(DefaultsHolder.defaultQueue[4]));
-			
+
 			System.out.println(DefaultsHolder.defaultRows[0] + " " + mc.get(DefaultsHolder.defaultRows[0]));
 			System.out.println(DefaultsHolder.defaultRows[2] + " " + mc.get(DefaultsHolder.defaultRows[2]));
 			System.out.println(DefaultsHolder.defaultRows[4] + " " + mc.get(DefaultsHolder.defaultRows[4]));
@@ -139,6 +155,47 @@ public class Migrator {
 		} finally {
 			if (mc != null) {
 				mc.shutdown();
+			}
+		}
+	}
+
+	private static void setHazelcastDefaultValues() {
+
+		HazelcastProperties hzp = CommonUtils.getHazelcastConnectionProps();
+		ClientConfig config = new ClientConfig();
+		config.setClusterName(hzp.getClusterName());
+		config.getNetworkConfig().setAddresses(CommonUtils.serversSplitter(hzp.getServers()));
+		HazelcastInstance hzi = null;
+
+		try {
+
+			hzi = HazelcastClient.newHazelcastClient(config);
+
+			IMap<String, String> qmap = hzi.getMap("queuesMap");
+			qmap.put(DefaultsHolder.defaultQueue[0], DefaultsHolder.defaultQueue[1]);
+			qmap.put(DefaultsHolder.defaultQueue[2], DefaultsHolder.defaultQueue[3]);
+			qmap.put(DefaultsHolder.defaultQueue[4], DefaultsHolder.defaultQueue[5]);
+
+			IMap<String, String> rmap = hzi.getMap("rowsMap");
+			rmap.put(DefaultsHolder.defaultRows[0], DefaultsHolder.defaultRows[1]);
+			rmap.put(DefaultsHolder.defaultRows[2], DefaultsHolder.defaultRows[3]);
+			rmap.put(DefaultsHolder.defaultRows[4], DefaultsHolder.defaultRows[5]);
+
+			System.out.println(DefaultsHolder.defaultQueue[0] + " " + qmap.get(DefaultsHolder.defaultQueue[0]));
+			System.out.println(DefaultsHolder.defaultQueue[2] + " " + qmap.get(DefaultsHolder.defaultQueue[2]));
+			System.out.println(DefaultsHolder.defaultQueue[4] + " " + qmap.get(DefaultsHolder.defaultQueue[4]));
+
+			System.out.println(DefaultsHolder.defaultRows[0] + " " + rmap.get(DefaultsHolder.defaultRows[0]));
+			System.out.println(DefaultsHolder.defaultRows[2] + " " + rmap.get(DefaultsHolder.defaultRows[2]));
+			System.out.println(DefaultsHolder.defaultRows[4] + " " + rmap.get(DefaultsHolder.defaultRows[4]));
+
+			Thread.sleep(5000);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			if (hzi != null) {
+				hzi.shutdown();
 			}
 		}
 	}
@@ -157,6 +214,44 @@ public class Migrator {
 			jedis.connect();
 			deleteKeysByPrefixes(jedis, prefixes);
 		}
+	}
+
+	public static void cleanMemcached() {
+
+		// Redis connection settings
+		RedisProperties redisProperties = CommonUtils.getRedisConnectionProps();
+
+		// Example usage
+		List<String> prefixes = Arrays.asList("show", "badge", "badges", "category", "exclusive-badge", "genre",
+				"image", "parental-guide", "age-restriction");
+
+		// Redis connection
+		try (Jedis jedis = new Jedis(redisProperties.getUrl())) {
+			jedis.connect();
+			deleteKeysByPrefixes(jedis, prefixes);
+		}
+	}
+
+	public static void cleanHazelCast() {
+
+		HazelcastProperties hzp = CommonUtils.getHazelcastConnectionProps();
+		ClientConfig config = new ClientConfig();
+		config.setClusterName(hzp.getClusterName());
+		config.getNetworkConfig().setAddresses(CommonUtils.serversSplitter(hzp.getServers()));
+		HazelcastInstance hzi = HazelcastClient.newHazelcastClient(config);
+
+		// Example usage
+
+		for (String map : maps) {
+			hzi.getMap(map).destroy();
+			System.out.println("✅ Map destroyed in Hazelcast: " + map);
+		}
+		try {
+			Thread.sleep(5000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		hzi.shutdown();
 	}
 
 	private static void deleteKeysByPrefixes(Jedis jedis, List<String> prefixes) {
