@@ -28,7 +28,7 @@ public class ImagesExporter {
 
 		MemcachedClient memcachedClient = null;
 		try (Connection pgConn = DriverManager.getConnection(pgProperties.getDbUrl(), pgProperties.getDbUser(), pgProperties.getDbPassword())) {
-			memcachedClient = new MemcachedClient(Helper.getServers(memcachedProperties.getServers()));
+			memcachedClient = new MemcachedClient(CommonUtils.getServers(memcachedProperties.getServers()));
 			String sql = "SELECT id, image_type, filename, title FROM images";
 
 			try (PreparedStatement ps = pgConn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {

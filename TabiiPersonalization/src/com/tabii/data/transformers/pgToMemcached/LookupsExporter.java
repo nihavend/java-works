@@ -33,7 +33,7 @@ public class LookupsExporter {
 
 		try (Connection pgConn = DriverManager.getConnection(pgProperties.getDbUrl(), pgProperties.getDbUser(), pgProperties.getDbPassword())) {
 
-			memcachedClient = new MemcachedClient(Helper.getServers(memcachedProperties.getServers()));
+			memcachedClient = new MemcachedClient(CommonUtils.getServers(memcachedProperties.getServers()));
 			
 			exportLookupObjects(pgConn, memcachedClient);
 
@@ -101,10 +101,10 @@ public class LookupsExporter {
 	private static void handleBadge(Connection pgConn, MemcachedClient mc, String redisKey, long id, JSONObject fields)
 			throws SQLException {
 		JSONObject badgeObj = new JSONObject();
-		badgeObj.put("bannerLocation", mapLocation(getNestedKey(fields, "banner_location.key")));
+		badgeObj.put("bannerLocation", CommonUtils.mapLocation(getNestedKey(fields, "banner_location.key")));
 		badgeObj.put("id", id);
 		badgeObj.put("images", getImageIdsFromFields(pgConn, fields));
-		badgeObj.put("showLocation", mapLocation(getNestedKey(fields, "show_card_location.key")));
+		badgeObj.put("showLocation", CommonUtils.mapLocation(getNestedKey(fields, "show_card_location.key")));
 		badgeObj.put("title", getNestedKey(fields, "display_title.text"));
 		badgeObj.put("type", getNestedKey(fields, "layout.key"));
 
@@ -171,21 +171,4 @@ public class LookupsExporter {
 		return current.optString(parts[parts.length - 1], "");
 	}
 
-	private static String mapLocation(String key) {
-		switch (key) {
-		case "upper_right_corner":
-			return "rightTop";
-		case "upper_left_corner":
-			return "leftTop";
-		case "lower_left_corner":
-			return "leftBottom";
-		case "on_top_of_the_logo":
-			return "upLogo";
-		case "under_the_logo":
-			return "bottomLogo";
-		case "do_not_show":
-		default:
-			return "invisible";
-		}
-	}
 }
