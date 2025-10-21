@@ -35,7 +35,7 @@ public class ContentsExporter {
 
 		try (Connection pgConn = DriverManager.getConnection(pgProperties.getDbUrl(), pgProperties.getDbUser(), pgProperties.getDbPassword())) {
 			
-			memcachedClient = new MemcachedClient(Helper.getServers(memcachedProperties.getServers()));
+			memcachedClient = new MemcachedClient(CommonUtils.getServers(memcachedProperties.getServers()));
 			
 			Statement stmt = pgConn.createStatement();
 			ResultSet rs = stmt.executeQuery(
