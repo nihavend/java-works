@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.tabii.QueueToJson;
+import com.tabii.RedisQueueToJson;
 
 @RestController
 @RequestMapping("/api/queues")
@@ -30,7 +30,7 @@ public class QueueController {
 		if (queueJson == null) {
 			throw new RuntimeException("Queue not found!");
 		}
-		ObjectNode resultJson = QueueToJson.parseQueueJson(redisService, mapper, queueJson);
+		ObjectNode resultJson = RedisQueueToJson.parseQueueJson(redisService, mapper, queueJson);
 		// System.out.println("Bitti : " + (System.currentTimeMillis() - start));
 
 		return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(resultJson);
