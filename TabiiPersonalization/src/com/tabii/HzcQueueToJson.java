@@ -1,5 +1,11 @@
 package com.tabii;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -11,117 +17,206 @@ import com.tabii.utils.HcMaps;
 public class HzcQueueToJson {
 
 	// For hazelcast improved performance with batch gets
+	// === Main Parser ===
 	public static ObjectNode parseQueueJson(HazelcastService hazelcastService, ObjectMapper mapper, String queueJson)
-	        throws JsonProcessingException {
+			throws JsonProcessingException {
 
-	    ObjectNode resultJson = mapper.createObjectNode();
-	    ObjectNode queueNode = (ObjectNode) mapper.readTree(queueJson);
-	    ArrayNode rowIds = (ArrayNode) queueNode.get("rows");
-	    ArrayNode dataArray = mapper.createArrayNode();
+		ObjectNode resultJson = mapper.createObjectNode();
+		ObjectNode queueNode = (ObjectNode) mapper.readTree(queueJson);
+		ArrayNode rowIds = (ArrayNode) queueNode.path("rows");
 
-	    for (JsonNode rowIdNode : rowIds) {
-	        String rowId = rowIdNode.asText();
-	        String rowJson = hazelcastService.getValue(HcMaps.ROWS.getMapName(), "row:" + rowId);
-	        if (rowJson == null) continue;
+		if (rowIds == null || rowIds.isEmpty()) {
+			resultJson.set("data", mapper.createArrayNode());
+			return resultJson;
+		}
 
-	        ObjectNode rowNode = (ObjectNode) mapper.readTree(rowJson);
-	        ObjectNode rowData = mapper.createObjectNode();
-	        rowData.put("id", Integer.parseInt(rowId));
-	        rowData.put("rowType", rowNode.path("rowType").asText());
+		// ---- 1️⃣ Batch fetch all rows ----
+		Set<String> rowKeys = new HashSet<>();
+		for (JsonNode rowIdNode : rowIds) {
+			rowKeys.add("row:" + rowIdNode.asText());
+		}
+		Map<String, Object> rowMap = hazelcastService.getAllValues(HcMaps.ROWS.getMapName(), rowKeys);
 
-	        ArrayNode contentsArray = mapper.createArrayNode();
-	        ArrayNode showsArray = (ArrayNode) rowNode.path("shows");
+		ArrayNode dataArray = mapper.createArrayNode();
 
-	        for (JsonNode showIdNode : showsArray) {
-	            String showId = showIdNode.asText();
-	            String showJson = hazelcastService.getValue(HcMaps.SHOWS.getMapName(), "show:" + showId);
-	            if (showJson == null) continue;
+		// ---- 2️⃣ Iterate over rows ----
+		for (Map.Entry<String, Object> rowEntry : rowMap.entrySet()) {
+			String rowKey = rowEntry.getKey();
+			String rowJson = (String) rowEntry.getValue();
+			if (rowJson == null)
+				continue;
 
-	            ObjectNode showNode = (ObjectNode) mapper.readTree(showJson);
-	            ObjectNode showData = mapper.createObjectNode();
+			String rowId = rowKey.substring("row:".length());
+			ObjectNode rowNode = (ObjectNode) mapper.readTree(rowJson);
 
-	            showData.put("id", Integer.parseInt(showId));
-	            showData.put("contentType", showNode.path("contentType").asText());
-	            showData.put("description", showNode.path("description").asText());
-	            showData.put("favorite", showNode.path("favorite").asBoolean());
-	            showData.put("madeYear", showNode.path("madeYear").asInt());
-	            showData.put("spot", showNode.path("spot").asText());
-	            showData.put("title", showNode.path("title").asText());
+			ObjectNode rowData = mapper.createObjectNode();
+			rowData.put("id", rowId);
+			rowData.put("rowType", rowNode.path("rowType").asText());
 
-	            // Add nested data
-	            showData.set("images", fetchNodes(mapper, hazelcastService, HcMaps.IMAGES, showNode.path("images")));
-	            showData.set("badges", fetchNodesWithImages(mapper, hazelcastService, HcMaps.BADEGES, showNode.path("badges")));
-	            showData.set("genres", fetchNodesWithImages(mapper, hazelcastService, HcMaps.GENRE, showNode.path("genres")));
+			ArrayNode showsArray = (ArrayNode) rowNode.path("shows");
+			if (showsArray == null || showsArray.isEmpty())
+				continue;
 
-	            if (showNode.has("exclusiveBadges")) {
-	                showData.set("exclusiveBadges", showNode.path("exclusiveBadges"));
-	            }
+			// ---- 3️⃣ Batch fetch shows ----
+			Set<String> showKeys = new HashSet<>();
+			for (JsonNode showIdNode : showsArray) {
+				showKeys.add("show:" + showIdNode.asText());
+			}
+			Map<String, Object> showMap = hazelcastService.getAllValues(HcMaps.SHOWS.getMapName(), showKeys);
 
-	            contentsArray.add(showData);
-	        }
+			ArrayNode contentsArray = mapper.createArrayNode();
 
-	        rowData.set("contents", contentsArray);
-	        dataArray.add(rowData);
-	    }
+			for (Map.Entry<String, Object> showEntry : showMap.entrySet()) {
+				String showKey = showEntry.getKey();
+				String showJson = (String) showEntry.getValue();
+				if (showJson == null)
+					continue;
 
-	    resultJson.set("data", dataArray);
-	    return resultJson;
+				String showId = showKey.substring("show:".length());
+				ObjectNode showNode = (ObjectNode) mapper.readTree(showJson);
+				ObjectNode showData = mapper.createObjectNode();
+
+				showData.put("id", showId);
+				showData.put("contentType", showNode.path("contentType").asText());
+				showData.put("description", showNode.path("description").asText());
+				showData.put("favorite", showNode.path("favorite").asBoolean());
+				showData.put("madeYear", showNode.path("madeYear").asInt());
+				showData.put("spot", showNode.path("spot").asText());
+				showData.put("title", showNode.path("title").asText());
+
+				// ---- 4️⃣ Nested data with batched helper methods ----
+				showData.set("images", fetchNodes(mapper, hazelcastService, HcMaps.IMAGES, showNode.path("images")));
+				showData.set("badges",
+						fetchNodesWithImages(mapper, hazelcastService, HcMaps.BADGES, showNode.path("badges")));
+				showData.set("genres",
+						fetchNodesWithImages(mapper, hazelcastService, HcMaps.GENRE, showNode.path("genres")));
+
+				if (showNode.has("exclusiveBadges")) {
+					showData.set("exclusiveBadges", showNode.path("exclusiveBadges"));
+				}
+
+				contentsArray.add(showData);
+			}
+
+			rowData.set("contents", contentsArray);
+			dataArray.add(rowData);
+		}
+
+		resultJson.set("data", dataArray);
+		return resultJson;
 	}
 
 	/**
 	 * Fetches simple object nodes (like images) by ID list.
 	 */
-	private static ArrayNode fetchNodes(ObjectMapper mapper, HazelcastService hazelcastService, HcMaps mapType, JsonNode idArray)
-	        throws JsonProcessingException {
-	    ArrayNode resultArray = mapper.createArrayNode();
-	    if (idArray == null || !idArray.isArray()) return resultArray;
+	private static ArrayNode fetchNodes(ObjectMapper mapper, HazelcastService hazelcastService, HcMaps mapType,
+			JsonNode idArray) throws JsonProcessingException {
 
-	    for (JsonNode idNode : idArray) {
-	        String key = getKeyPrefix(mapType) + idNode.asText();
-	        String json = hazelcastService.getValue(mapType.getMapName(), key);
-	        if (json != null) {
-	            resultArray.add(mapper.readTree(json));
-	        }
-	    }
-	    return resultArray;
+		ArrayNode resultArray = mapper.createArrayNode();
+		if (idArray == null || !idArray.isArray() || idArray.isEmpty())
+			return resultArray;
+
+		// Build all keys first
+		Set<String> keys = new HashSet<>();
+		for (JsonNode idNode : idArray) {
+			keys.add("image:" + idNode.asText());
+		}
+
+		// Batch fetch
+		Map<String, Object> dataMap = hazelcastService.getAllValues(mapType.getMapName(), keys);
+
+		for (Object value : dataMap.values()) {
+			if (value != null) {
+				resultArray.add(mapper.readTree(value.toString()));
+			}
+		}
+
+		return resultArray;
 	}
 
 	/**
 	 * Fetches nodes (like badges/genres) that also contain nested image IDs.
 	 */
 	private static ArrayNode fetchNodesWithImages(ObjectMapper mapper, HazelcastService hazelcastService,
-	                                              HcMaps mapType, JsonNode idArray)
-	        throws JsonProcessingException {
-	    ArrayNode resultArray = mapper.createArrayNode();
-	    if (idArray == null || !idArray.isArray()) return resultArray;
+			HcMaps mapType, JsonNode idArray) throws JsonProcessingException {
 
-	    for (JsonNode idNode : idArray) {
-	        String key = getKeyPrefix(mapType) + idNode.asText();
-	        String json = hazelcastService.getValue(mapType.getMapName(), key);
-	        if (json == null) continue;
+		ArrayNode resultArray = mapper.createArrayNode();
+		if (idArray == null || !idArray.isArray() || idArray.isEmpty())
+			return resultArray;
 
-	        ObjectNode node = (ObjectNode) mapper.readTree(json);
-	        node.set("images", fetchNodes(mapper, hazelcastService, HcMaps.IMAGES, node.path("images")));
-	        resultArray.add(node);
-	    }
-	    return resultArray;
+// ---- 1️⃣ Batch fetch all parent objects (badges / genres) ----
+		Set<String> keys = new HashSet<>();
+		for (JsonNode idNode : idArray) {
+			keys.add(mapType.name().toLowerCase() + ":" + idNode.asText());
+		}
+		Map<String, Object> parentMap = hazelcastService.getAllValues(mapType.getMapName(), keys);
+
+// ---- 2️⃣ Collect all nested image IDs ----
+		Set<String> nestedImageKeys = new HashSet<>();
+		Map<String, ObjectNode> parentNodes = new HashMap<>();
+
+		for (Map.Entry<String, Object> entry : parentMap.entrySet()) {
+			if (entry.getValue() == null)
+				continue;
+
+			ObjectNode parentNode = (ObjectNode) mapper.readTree(entry.getValue().toString());
+			parentNodes.put(entry.getKey(), parentNode);
+
+			ArrayNode imageIds = (ArrayNode) parentNode.path("images");
+			if (imageIds != null) {
+				for (JsonNode imgId : imageIds) {
+					nestedImageKeys.add("image:" + imgId.asText());
+				}
+			}
+		}
+
+		// ---- 3️⃣ Batch fetch all nested images ----
+		Map<String, Object> imageMap = nestedImageKeys.isEmpty() ? Collections.emptyMap()
+				: hazelcastService.getAllValues(HcMaps.IMAGES.getMapName(), nestedImageKeys);
+
+		// ---- 4️⃣ Attach images back to each parent ----
+		for (ObjectNode parentNode : parentNodes.values()) {
+			ArrayNode imageIds = (ArrayNode) parentNode.path("images");
+			ArrayNode imagesArray = mapper.createArrayNode();
+
+			if (imageIds != null) {
+				for (JsonNode imgId : imageIds) {
+					String key = "image:" + imgId.asText();
+					Object imgJson = imageMap.get(key);
+					if (imgJson != null) {
+						imagesArray.add(mapper.readTree(imgJson.toString()));
+					}
+				}
+			}
+
+			parentNode.set("images", imagesArray);
+			resultArray.add(parentNode);
+		}
+
+		return resultArray;
 	}
 
 	/**
 	 * Generates consistent key prefixes based on map type.
 	 */
 	private static String getKeyPrefix(HcMaps mapType) {
-	    switch (mapType) {
-	        case ROWS: return "row:";
-	        case SHOWS: return "show:";
-	        case IMAGES: return "image:";
-	        case BADEGES: return "badges:";
-	        case GENRE: return "genre:";
-	        case EXCBADGES: return "exclusiveBadge:";
-	        default: return "";
-	    }
+		switch (mapType) {
+		case ROWS:
+			return "row:";
+		case SHOWS:
+			return "show:";
+		case IMAGES:
+			return "image:";
+		case BADGES:
+			return "badges:";
+		case GENRE:
+			return "genre:";
+		case EXCBADGES:
+			return "exclusiveBadge:";
+		default:
+			return "";
+		}
 	}
-
 
 	// For hazelcast bad performance
 	public static ObjectNode parseQueueJson1(HazelcastService hazelcastService, ObjectMapper mapper, String queueJson)
