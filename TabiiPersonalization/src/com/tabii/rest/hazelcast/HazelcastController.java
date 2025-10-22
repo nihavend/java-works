@@ -45,6 +45,7 @@ public class HazelcastController {
 			throw new RuntimeException("Queue not found!");
 		}
 		ObjectNode resultJson = HzcQueueToJson.parseQueueJson(hazelcastService, mapper, queueJson);
+		// ObjectNode resultJson = JsonParser.parseQueueJson(hazelcastService, mapper, queueJson);
 		// System.out.println("Bitti : " + (System.currentTimeMillis() - start));
 
 		return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(resultJson);
