@@ -2,7 +2,7 @@ package com.tabii.utils;
 
 public enum HcMaps {
 	// Enum constants
-	QUEUES("queuesMap"), ROWS("rowsMap"), IMAGES("imagesMap"), EXCBADGES("exclusiveBadgesMap"), BADEGES("badgesMap"), GENRE("genreMap"), SHOWS("showsMap");
+	QUEUES("queuesMap"), ROWS("rowsMap"), IMAGES("imagesMap"), EXCBADGES("exclusiveBadgesMap"), BADGES("badgesMap"), GENRE("genreMap"), SHOWS("showsMap");
 
 	private final String mapName;
 
