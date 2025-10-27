@@ -1,4 +1,4 @@
-package com.tabii;
+package com.tabii.rest.redis;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -12,7 +12,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.tabii.rest.redis.RedisService;
 import com.tabii.utils.CommonUtils;
 import com.tabii.utils.RedisProperties;
 
