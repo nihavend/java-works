@@ -48,7 +48,7 @@ public class ImagesExporter {
 			try (PreparedStatement ps = pgConn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
 				while (rs.next()) {
 					int id = rs.getInt("id");
-					String redisKey = "image:" + id;
+					String key = "image:" + id;
 
 					// Build JSON value
 					JSONObject value = new JSONObject();
@@ -59,7 +59,7 @@ public class ImagesExporter {
 					value.put("name", rs.getString("filename"));
 					value.put("title", rs.getString("title"));
 
-					PutItemResponse pr = CommonUtils.dynamoDataCreator(dynamoClient, dynamoTableName, redisKey, value.toString());
+					PutItemResponse pr = CommonUtils.dynamoDataCreator(dynamoClient, dynamoTableName, key, value.toString());
 					
 					System.out.println("PutResponse :" + pr.toString() + " Inserted: " + id + " -> " + value);
 				}
