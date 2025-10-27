@@ -1,11 +1,13 @@
 package com.tabii;
 
+import java.net.URI;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -28,6 +30,7 @@ import com.tabii.data.transformers.pgToRedis.PgContentsToRedisExporter;
 import com.tabii.helpers.DefaultsHolder;
 import com.tabii.helpers.TableManager;
 import com.tabii.utils.CommonUtils;
+import com.tabii.utils.DynamoDBProperties;
 import com.tabii.utils.HazelcastProperties;
 import com.tabii.utils.MemcachedProperties;
 import com.tabii.utils.PgProperties;
@@ -38,24 +41,67 @@ import net.spy.memcached.internal.OperationFuture;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.params.ScanParams;
 import redis.clients.jedis.resps.ScanResult;
+import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
+import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
+import software.amazon.awssdk.http.apache.ApacheHttpClient;
+import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 
 public class Migrator {
 
 	private static final Logger logger = Logger.getLogger("Migrator");
 
-	public static final List<String> maps = Arrays.asList("imagesMap", "exclusiveBadgesMap", "badgesMap", "genreMap", "showsMap");
+	enum StorageType {
+		POSTGRES, REDIS, MEMCACHED, HAZELCAST, DYNAMODB, ALL
+	}
+	// List of table names to delete
+	private static List<String> tableNames = Arrays.asList("shows", "badges", "genres", "images", "queues", "rows", "exclusive-badges");
+
+	
+	public static final List<String> maps = Arrays.asList("imagesMap", "exclusiveBadgesMap", "badgesMap", "genreMap",
+			"showsMap");
 
 	public static void main(String[] args) throws Exception {
+		
+		var key = StorageType.DYNAMODB;
+		
+		switch (key) {
+		case DYNAMODB:
+			cleanDynamoDB();
+			pgToDynamoDb();
+			break;
+		case HAZELCAST:
+			cleanHazelCast();	
+			pgToHazelcast();
+			break;
+		case MEMCACHED:
+			cleanMemcached();
+			pgToMemecached();
+			break;
+		case POSTGRES:
+			cleanPg();
+			mongoTopg();
+			break;
+		case REDIS:
+			cleanRedis();
+			pgToredis();
+			break;
+		case ALL:
+			cleanUp();
+			buildUp();
+			break;
+		default:
+			break;
+		}
 
-		cleanHazelCast();
-		pgToHazelcast();
-		// cleanUp();
-		// buildUp();
 	}
 
 	public static void cleanUp() {
-		cleanUpPg();
+		cleanPg();
 		cleanRedis();
+		cleanMemcached();
+		cleanHazelCast();
+		cleanDynamoDB();
 	}
 
 	public static void buildUp() throws Exception {
@@ -63,6 +109,7 @@ public class Migrator {
 		pgToredis();
 		pgToMemecached();
 		pgToHazelcast();
+		pgToDynamoDb();
 	}
 
 	private static void mongoTopg() throws Exception {
@@ -90,6 +137,18 @@ public class Migrator {
 		com.tabii.data.transformers.pgToHazelcast.LookupsExporter.migrate();
 		com.tabii.data.transformers.pgToHazelcast.ContentsExporter.migrate();
 		setHazelcastDefaultValues();
+	}
+	
+	private static void pgToDynamoDb() {
+		DynamoDbClient dynamoDbClient = CommonUtils.createDynamoDbClient();
+		CommonUtils.createDynamoDbTables(dynamoDbClient, tableNames);
+		dynamoDbClient.close();
+
+		setDynamoDBDefaultValues();
+		
+		com.tabii.data.transformers.pgToDynamoDB.ImagesExporter.migrate();
+		com.tabii.data.transformers.pgToDynamoDB.LookupsExporter.migrate();
+		com.tabii.data.transformers.pgToDynamoDB.ContentsExporter.migrate();
 	}
 
 	private static void setRedisDefaultValues() {
@@ -200,6 +259,52 @@ public class Migrator {
 		}
 	}
 
+	private static void setDynamoDBDefaultValues() {
+		DynamoDBProperties dynamoDBProperties = CommonUtils.getDynamoDBConnectionProps();
+
+		// Configure connection pooling and timeouts
+		ApacheHttpClient.Builder httpClientBuilder = ApacheHttpClient.builder().maxConnections(100) // Default is 50
+				.connectionTimeout(Duration.ofSeconds(10)).socketTimeout(Duration.ofSeconds(20))
+				.connectionAcquisitionTimeout(Duration.ofSeconds(5));
+
+		DynamoDbClient dc = DynamoDbClient.builder().endpointOverride(URI.create(dynamoDBProperties.getUri())) // DynamoDB
+																												// local
+				.region(Region.US_EAST_1)
+				.credentialsProvider(StaticCredentialsProvider.create(AwsBasicCredentials
+						.create(dynamoDBProperties.getAccessKey(), dynamoDBProperties.getSecretKey())))
+				.httpClientBuilder(httpClientBuilder).build();
+
+		try {
+
+			CommonUtils.dynamoDataCreator(dc, "queues", DefaultsHolder.defaultQueue[0], DefaultsHolder.defaultQueue[1]);
+
+			CommonUtils.dynamoDataCreator(dc, "queues", DefaultsHolder.defaultQueue[2], DefaultsHolder.defaultQueue[3]);
+
+			CommonUtils.dynamoDataCreator(dc, "queues", DefaultsHolder.defaultQueue[4], DefaultsHolder.defaultQueue[5]);
+
+			CommonUtils.dynamoDataCreator(dc, "rows", DefaultsHolder.defaultRows[0], DefaultsHolder.defaultRows[1]);
+			CommonUtils.dynamoDataCreator(dc, "rows", DefaultsHolder.defaultRows[2], DefaultsHolder.defaultRows[3]);
+			CommonUtils.dynamoDataCreator(dc, "rows", DefaultsHolder.defaultRows[4], DefaultsHolder.defaultRows[5]);
+
+			System.out.println(DefaultsHolder.defaultQueue[0] + " "
+					+ CommonUtils.dynamoDbGetById(dc, "queues", DefaultsHolder.defaultQueue[0]).getDescription());
+			System.out.println(DefaultsHolder.defaultQueue[2] + " "
+					+ CommonUtils.dynamoDbGetById(dc, "queues", DefaultsHolder.defaultQueue[2]).getDescription());
+			System.out.println(DefaultsHolder.defaultQueue[4] + " "
+					+ CommonUtils.dynamoDbGetById(dc, "queues", DefaultsHolder.defaultQueue[4]).getDescription());
+
+			System.out.println(DefaultsHolder.defaultRows[0] + " "
+					+ CommonUtils.dynamoDbGetById(dc, "rows", DefaultsHolder.defaultRows[0]).getDescription());
+			System.out.println(DefaultsHolder.defaultRows[2] + " "
+					+ CommonUtils.dynamoDbGetById(dc, "rows", DefaultsHolder.defaultRows[2]).getDescription());
+			System.out.println(DefaultsHolder.defaultRows[4] + " "
+					+ CommonUtils.dynamoDbGetById(dc, "rows", DefaultsHolder.defaultRows[4]).getDescription());
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
 	public static void cleanRedis() {
 
 		// Redis connection settings
@@ -254,6 +359,13 @@ public class Migrator {
 		hzi.shutdown();
 	}
 
+	private static void cleanDynamoDB() {
+
+		DynamoDbClient dynamoDbClient = CommonUtils.createDynamoDbClient();
+		CommonUtils.deleteAllTables(dynamoDbClient, tableNames);
+		dynamoDbClient.close();
+	}
+
 	private static void deleteKeysByPrefixes(Jedis jedis, List<String> prefixes) {
 		for (String prefix : prefixes) {
 			String pattern = prefix + "*";
@@ -278,7 +390,7 @@ public class Migrator {
 		}
 	}
 
-	private static void cleanUpPg() {
+	private static void cleanPg() {
 
 		PgProperties pgProperties = CommonUtils.getPgConnectionProps();
 
