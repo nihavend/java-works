@@ -55,11 +55,11 @@ public class DynamoDBController {
 
 		// long start =System.currentTimeMillis();
 		// System.out.println("Başladı : " + System.currentTimeMillis());
-		String queueJson = dynamoDBService.getById("queues", "queue:" + queueId).toString();
-		if (queueJson == null) {
+		Item item  = dynamoDBService.getById("queues", "queue:" + queueId);
+		if (item == null) {
 			throw new RuntimeException("Queue not found!");
 		}
-		ObjectNode resultJson = DynamoDBQueueToJson.parseQueueJson(dynamoDBService, mapper, queueJson);
+		ObjectNode resultJson = DynamoDBQueueToJson.parseQueueJson(dynamoDBService, mapper, item.getDescription());
 		// System.out.println("Bitti : " + (System.currentTimeMillis() - start));
 
 		return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(resultJson);

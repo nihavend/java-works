@@ -30,7 +30,7 @@ public class DynamoDBQueueToJson {
 			if (rowJson == null)
 				continue;
 
-			ObjectNode rowNode = (ObjectNode) mapper.readTree(rowJson.toString());
+			ObjectNode rowNode = (ObjectNode) mapper.readTree(rowJson.getDescription());
 			ObjectNode rowData = mapper.createObjectNode();
 
 			rowData.put("id", Integer.parseInt(rowId));
@@ -48,7 +48,7 @@ public class DynamoDBQueueToJson {
 				if (showJson == null)
 					continue;
 
-				ObjectNode showNode = (ObjectNode) mapper.readTree(showJson.toString());
+				ObjectNode showNode = (ObjectNode) mapper.readTree(showJson.getDescription());
 				ObjectNode showData = mapper.createObjectNode();
 				showData.put("id", Integer.parseInt(showId)); // Ensure show ID is a number
 				showData.put("contentType", showNode.get("contentType").asText());

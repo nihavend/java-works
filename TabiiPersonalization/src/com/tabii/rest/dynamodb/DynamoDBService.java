@@ -35,11 +35,15 @@ public class DynamoDBService {
 	}
 
 	public Item getById(String tableName, String id) {
-		Map<String, AttributeValue> key = Map.of("id", AttributeValue.builder().s(id).build());
+	    Map<String, AttributeValue> key = Map.of(
+		        "PK", AttributeValue.builder().s(id).build(),
+		        "SK", AttributeValue.builder().s(id).build()
+		    );
+		
 		GetItemResponse response = dynamoDb.getItem(GetItemRequest.builder().tableName(tableName).key(key).build());
 		if (response.hasItem()) {
 			Map<String, AttributeValue> item = response.item();
-			return new Item(item.get("id").s(), item.get("name").s(), item.get("description").s());
+			return new Item(item.get("PK").s(), item.get("SK").s(), item.get("data").s());
 		}
 		return null;
 	}

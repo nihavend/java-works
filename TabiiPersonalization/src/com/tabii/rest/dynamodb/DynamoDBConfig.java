@@ -15,7 +15,7 @@ import java.time.Duration;
 public class DynamoDBConfig {
 
 	@Bean
-    public DynamoDbClient dynamoDbClient() {
+    DynamoDbClient dynamoDbClient() {
         // Configure connection pooling and timeouts
         ApacheHttpClient.Builder httpClientBuilder = ApacheHttpClient.builder()
                 .maxConnections(100) // Default is 50
