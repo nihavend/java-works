@@ -1,2 +1,4 @@
-curl -X POST http://localhost:8080/hazelcast/hello -d "world"
-curl http://localhost:8080/hazelcast/hello
+curl -X POST http://localhost:8080/dynamodb/items/create -d "world"
+curl http://localhost:8080/dynamodb/items/1
+curl http://localhost:8080/dynamodb/items
+curl http://localhost:8080/dynamodb/items/queues/1
