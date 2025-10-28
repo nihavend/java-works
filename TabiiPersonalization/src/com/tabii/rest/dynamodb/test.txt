@@ -1,3 +1,6 @@
 curl -X POST "http://localhost:8080/dynamodb/set?key=test&value=hello"
 curl "http://localhost:8080/dynamodb/get?key=test"
 curl -X DELETE "http://localhost:8080/dynamodb/del?key=test"
+
+
+curl "http://localhost:8080/dynamodb/queues/1"

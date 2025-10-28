@@ -1,13 +1,23 @@
 package com.tabii.rest.dynamodb;
 
+import java.util.Map;
+
+import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
+
 public class Item {
 
 	private String id;
 	private String name;
 	private String description;
 	
+	private final Map<String, AttributeValue> attributes;
+
+    public Item(Map<String, AttributeValue> attributes) {
+        this.attributes = attributes;
+    }
+	
 	public Item(String id, String name, String description) {
-		super();
+		this.attributes = null;
 		this.id = id;
 		this.name = name;
 		this.description = description;
@@ -36,5 +46,11 @@ public class Item {
 	public void setDescription(String description) {
 		this.description = description;
 	}
+	
+    public Map<String, AttributeValue> getAttributes() {
+		return attributes;
+	}
+
+
 
 }
